@@ -1,9 +1,4 @@
-import 'react-native-url-polyfill/auto';
-
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { createClient, SupabaseClient } from '@supabase/supabase-js';
-
-import { SUPABASE_ANON_KEY, SUPABASE_URL } from '@/config/app';
+import { getSupabase as supabase } from '@/services/supabase/client';
 import { AuthError, AuthProvider, AuthSession } from './types';
 
 /**
@@ -11,22 +6,6 @@ import { AuthError, AuthProvider, AuthSession } from './types';
  * key" pública, pensada para el cliente; la seguridad real la dan las
  * Row Level Security policies del proyecto Supabase.
  */
-let client: SupabaseClient | undefined;
-
-function supabase(): SupabaseClient {
-  if (!client) {
-    client = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-      auth: {
-        storage: AsyncStorage,
-        autoRefreshToken: true,
-        persistSession: true,
-        detectSessionInUrl: false,
-      },
-    });
-  }
-  return client;
-}
-
 function toSession(user: { id: string; email?: string } | null): AuthSession | null {
   if (!user) return null;
   return { user: { id: user.id, email: user.email ?? '' } };

@@ -3,6 +3,7 @@ import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
 import { FREE_SCANS_TOTAL } from '@/config/limits';
+import { cloud } from '@/services/sync';
 import { Pet, ScanRecord } from './types';
 
 /**
@@ -27,6 +28,8 @@ interface AppState {
   setActivePet: (id: string) => void;
   addScan: (scan: ScanRecord) => void;
   consumeFreeScan: () => void;
+  /** Carga mascotas y escaneos descargados de la nube (reemplaza lo local). */
+  loadFromCloud: (pets: Pet[], scans: ScanRecord[]) => void;
   /** Borra todos los datos locales (mascotas, escaneos, progreso). */
   resetAll: () => void;
 }
@@ -42,11 +45,17 @@ export const useAppStore = create<AppState>()(
       freeScansUsed: 0,
 
       setOnboardingDone: () => set({ onboardingDone: true }),
-      // Al añadir una mascota pasa a ser la activa.
-      addPet: (pet) => set((s) => ({ pets: [...s.pets, pet], activePetId: pet.id })),
-      updatePet: (id, changes) =>
-        set((s) => ({ pets: s.pets.map((p) => (p.id === id ? { ...p, ...changes } : p)) })),
-      removePet: (id) =>
+      // Al añadir una mascota pasa a ser la activa. Se replica en la nube.
+      addPet: (pet) => {
+        set((s) => ({ pets: [...s.pets, pet], activePetId: pet.id }));
+        cloud.upsertPet(pet);
+      },
+      updatePet: (id, changes) => {
+        set((s) => ({ pets: s.pets.map((p) => (p.id === id ? { ...p, ...changes } : p)) }));
+        const updated = useAppStore.getState().pets.find((p) => p.id === id);
+        if (updated) cloud.upsertPet(updated);
+      },
+      removePet: (id) => {
         set((s) => {
           const pets = s.pets.filter((p) => p.id !== id);
           return {
@@ -55,10 +64,21 @@ export const useAppStore = create<AppState>()(
             scans: s.scans.filter((scan) => scan.petId !== id),
             activePetId: s.activePetId === id ? pets[0]?.id : s.activePetId,
           };
-        }),
+        });
+        cloud.deletePet(id);
+      },
       setActivePet: (id) => set({ activePetId: id }),
-      addScan: (scan) => set((s) => ({ scans: [scan, ...s.scans] })),
+      addScan: (scan) => {
+        set((s) => ({ scans: [scan, ...s.scans] }));
+        cloud.upsertScan(scan);
+      },
       consumeFreeScan: () => set((s) => ({ freeScansUsed: s.freeScansUsed + 1 })),
+      loadFromCloud: (pets, scans) =>
+        set((s) => ({
+          pets,
+          scans,
+          activePetId: pets.some((p) => p.id === s.activePetId) ? s.activePetId : pets[0]?.id,
+        })),
       resetAll: () =>
         set({
           onboardingDone: false,

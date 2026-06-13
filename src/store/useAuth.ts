@@ -2,8 +2,29 @@ import { create } from 'zustand';
 
 import { auth, AuthError, AuthUser } from '@/services/auth';
 import { track } from '@/services/analytics';
+import { cloud } from '@/services/sync';
+import { useAppStore } from '@/store/useAppStore';
 
 type Status = 'loading' | 'authed' | 'guest';
+
+/**
+ * Al autenticarse, sincroniza con la nube: si la cuenta ya tiene datos, los
+ * descarga (aparece en cualquier dispositivo); si está vacía pero hay datos
+ * locales (creados en el onboarding antes de la cuenta), los sube.
+ */
+async function syncOnAuth() {
+  if (!cloud.enabled()) return;
+  cloud.setActive(true);
+  const remote = await cloud.pull();
+  if (!remote) return;
+  const local = useAppStore.getState();
+  if (remote.pets.length > 0 || remote.scans.length > 0) {
+    local.loadFromCloud(remote.pets, remote.scans);
+  } else {
+    local.pets.forEach((pet) => cloud.upsertPet(pet));
+    local.scans.forEach((scan) => cloud.upsertScan(scan));
+  }
+}
 
 interface AuthState {
   status: Status;
@@ -35,12 +56,14 @@ export const useAuth = create<AuthState>((set, get) => ({
     try {
       const session = await auth().getSession();
       set({ status: session ? 'authed' : 'guest', user: session?.user });
+      if (session) await syncOnAuth();
     } catch {
       set({ status: 'guest' });
     }
     // Escucha cambios de sesión (p. ej. expiración de token en Supabase).
     auth().onAuthChange?.((session) => {
       set({ status: session ? 'authed' : 'guest', user: session?.user });
+      if (!session) cloud.setActive(false);
     });
   },
 
@@ -50,6 +73,7 @@ export const useAuth = create<AuthState>((set, get) => ({
       const session = await auth().signIn(email, password);
       set({ status: 'authed', user: session.user, submitting: false });
       track('sesion_iniciada');
+      await syncOnAuth();
       return true;
     } catch (error) {
       set({ submitting: false, error: messageFrom(error) });
@@ -63,6 +87,7 @@ export const useAuth = create<AuthState>((set, get) => ({
       const session = await auth().signUp(email, password);
       set({ status: 'authed', user: session.user, submitting: false });
       track('cuenta_creada');
+      await syncOnAuth();
       return true;
     } catch (error) {
       set({ submitting: false, error: messageFrom(error) });
@@ -72,12 +97,14 @@ export const useAuth = create<AuthState>((set, get) => ({
 
   signOut: async () => {
     await auth().signOut();
+    cloud.setActive(false);
     set({ status: 'guest', user: undefined });
     track('sesion_cerrada');
   },
 
   deleteAccount: async () => {
     await auth().deleteAccount();
+    cloud.setActive(false);
     set({ status: 'guest', user: undefined });
     track('cuenta_eliminada');
   },

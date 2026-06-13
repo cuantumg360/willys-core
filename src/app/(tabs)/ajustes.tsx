@@ -7,6 +7,7 @@ import { APP_VERSION, SUPPORT_EMAIL } from '@/config/app';
 import { MAX_PETS } from '@/config/limits';
 import { t } from '@/i18n';
 import { usePurchases } from '@/services/purchases';
+import { cloud } from '@/services/sync';
 import { useAppStore, usePrimaryPet } from '@/store/useAppStore';
 import { useAuth } from '@/store/useAuth';
 import { colors, radius, spacing, type } from '@/theme';
@@ -60,7 +61,8 @@ export default function Settings() {
       {
         text: t('settings.account.deleteCta'),
         style: 'destructive',
-        onPress: () => {
+        onPress: async () => {
+          await cloud.wipe();
           resetAll();
           router.replace('/onboarding');
         },
@@ -114,6 +116,9 @@ export default function Settings() {
         <Row label={t('auth.signOut')} onPress={confirmSignOut} />
         <Row label={t('auth.deleteAccount')} destructive onPress={confirmDeleteAccount} />
       </Section>
+      <Text style={[type.small, styles.syncNote]}>
+        {cloud.enabled() ? t('settings.sync.cloud') : t('settings.sync.local')}
+      </Text>
 
       <Section title={t('settings.data.section')}>
         <Row label={t('settings.account.tutorial')} onPress={replayTutorial} />
@@ -198,5 +203,6 @@ const styles = StyleSheet.create({
   chevron: { fontSize: 22, color: colors.textMuted },
   emailIcon: { fontSize: 18 },
   note: { paddingHorizontal: spacing.xs },
+  syncNote: { paddingHorizontal: spacing.xs, marginTop: spacing.sm },
   version: { textAlign: 'center', marginTop: spacing.xl },
 });

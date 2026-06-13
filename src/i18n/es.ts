@@ -175,6 +175,8 @@ export const es = {
   'settings.sub.inactive': 'Hazte premium',
   'settings.sub.restore': 'Restaurar compras',
   'settings.account.section': 'Cuenta',
+  'settings.sync.cloud': '☁️ Sincronizado con tu cuenta',
+  'settings.sync.local': '📱 Guardado en este dispositivo',
   'settings.data.section': 'Datos y privacidad',
   'settings.account.tutorial': 'Ver el tutorial otra vez',
   'settings.account.deleteData': 'Borrar todos mis datos',

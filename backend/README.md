@@ -20,16 +20,36 @@ Notas:
 - La *anon key* es **pública** por diseño; la seguridad real la dan las
   *Row Level Security policies* del proyecto. Nunca pongas la *service role
   key* en el cliente.
-- **Sincronizar mascotas y escaneos en la nube** (para verlos en varios
-  dispositivos) es el siguiente paso: crear tablas `pets` y `scans` con RLS
-  por `auth.uid()` y guardar/leer desde Supabase. Hoy esos datos viven en
-  el dispositivo; el login ya está listo para colgar de él esa sincronización.
 - **Eliminar la cuenta de verdad** (no solo cerrar sesión) requiere una Edge
   Function con la *service role key* que llame a `auth.admin.deleteUser()`.
   El cliente solo cierra sesión y borra los datos locales.
 - *Sign in with Apple*: si más adelante añades login social, Apple exige
   ofrecer también "Iniciar sesión con Apple" (necesita development build,
   no funciona en Expo Go).
+
+## Sincronización en la nube (mascotas y escaneos)
+
+Ya está integrada (`src/services/sync`). En cuanto Supabase está configurado
+y hay sesión, las mascotas y los escaneos se replican en la nube y aparecen
+en cualquier dispositivo donde inicies sesión. Para activarla:
+
+1. Configura Supabase (sección anterior).
+2. En el **SQL Editor** de Supabase, pega y ejecuta `backend/supabase.sql`
+   (crea las tablas `pets` y `scans` con sus RLS policies).
+3. Listo. Cómo funciona:
+   - Al iniciar sesión: si la cuenta ya tiene datos, se descargan; si está
+     vacía pero hay datos locales (creados en el onboarding), se suben.
+   - Cada cambio (añadir/editar/borrar mascota, nuevo escaneo) se replica al
+     instante.
+   - La app sigue funcionando offline (los datos viven también en local);
+     al reconectar se vuelve a leer el estado real.
+
+Pendiente (siguiente refinamiento):
+- **Fotos**: hoy `foto_uri` y las fotos de escaneo son rutas locales del
+  dispositivo, así que la **info** (nombre, raza, resultados) se sincroniza
+  pero las **imágenes** no se ven en otros dispositivos. Para sincronizarlas
+  hay que subirlas a **Supabase Storage** al elegirlas y guardar su URL
+  pública en lugar de la ruta local.
 
 # Backend de análisis de imágenes (Fase 2 — aún no implementado)
 
