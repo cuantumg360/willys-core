@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { FadeIn } from '@/components/anim/FadeIn';
 import { Button } from '@/components/ui/Button';
 import { flags } from '@/config/flags';
 import { t } from '@/i18n';
@@ -74,20 +75,20 @@ export default function Paywall() {
         </Pressable>
       )}
 
-      <View style={styles.top}>
+      <FadeIn style={styles.top} offsetY={16} duration={520}>
         <Text style={styles.emoji}>🐾</Text>
         <Text style={[type.title, { textAlign: 'center' }]}>
           {pet?.nombre ? t('paywall.title', { name: pet.nombre }) : t('paywall.titleNoName')}
         </Text>
         <View style={styles.bullets}>
-          {BULLETS.map((key) => (
-            <View key={key} style={styles.bullet}>
+          {BULLETS.map((key, index) => (
+            <FadeIn key={key} delay={160 + index * 90} style={styles.bullet}>
               <Text style={styles.check}>✓</Text>
               <Text style={[type.body, { flex: 1 }]}>{t(key)}</Text>
-            </View>
+            </FadeIn>
           ))}
         </View>
-      </View>
+      </FadeIn>
 
       <View style={{ gap: spacing.sm }}>
         <PlanOption

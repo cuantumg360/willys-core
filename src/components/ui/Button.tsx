@@ -1,5 +1,6 @@
 import * as Haptics from 'expo-haptics';
-import { ActivityIndicator, Pressable, StyleSheet, Text, ViewStyle } from 'react-native';
+import { useRef } from 'react';
+import { ActivityIndicator, Animated, Pressable, StyleSheet, Text, ViewStyle } from 'react-native';
 
 import { colors, radius, spacing, type } from '@/theme';
 
@@ -13,32 +14,35 @@ interface Props {
 }
 
 export function Button({ label, onPress, variant = 'primary', disabled, loading, style }: Props) {
+  const scale = useRef(new Animated.Value(1)).current;
+
+  const spring = (toValue: number) =>
+    Animated.spring(scale, { toValue, useNativeDriver: true, speed: 40, bounciness: 7 }).start();
+
   const handlePress = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     onPress();
   };
 
   return (
-    <Pressable
-      accessibilityRole="button"
-      onPress={handlePress}
-      disabled={disabled || loading}
-      style={({ pressed }) => [
-        styles.base,
-        styles[variant],
-        (disabled || loading) && styles.disabled,
-        pressed && styles.pressed,
-        style,
-      ]}
-    >
-      {loading ? (
-        <ActivityIndicator color={variant === 'primary' ? colors.textOnPrimary : colors.primary} />
-      ) : (
-        <Text style={[type.button, variant !== 'primary' && { color: colors.primary }]}>
-          {label}
-        </Text>
-      )}
-    </Pressable>
+    <Animated.View style={[{ transform: [{ scale }] }, style]}>
+      <Pressable
+        accessibilityRole="button"
+        onPress={handlePress}
+        onPressIn={() => spring(0.96)}
+        onPressOut={() => spring(1)}
+        disabled={disabled || loading}
+        style={[styles.base, styles[variant], (disabled || loading) && styles.disabled]}
+      >
+        {loading ? (
+          <ActivityIndicator color={variant === 'primary' ? colors.textOnPrimary : colors.primary} />
+        ) : (
+          <Text style={[type.button, variant !== 'primary' && { color: colors.primary }]}>
+            {label}
+          </Text>
+        )}
+      </Pressable>
+    </Animated.View>
   );
 }
 
@@ -54,5 +58,4 @@ const styles = StyleSheet.create({
   secondary: { backgroundColor: colors.primarySoft },
   ghost: { backgroundColor: 'transparent' },
   disabled: { opacity: 0.45 },
-  pressed: { opacity: 0.85, transform: [{ scale: 0.99 }] },
 });

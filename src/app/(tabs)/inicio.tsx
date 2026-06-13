@@ -1,7 +1,10 @@
 import { router } from 'expo-router';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
+import { FadeIn } from '@/components/anim/FadeIn';
+import { PetAvatar } from '@/components/PetAvatar';
 import { ScanCounter } from '@/components/ScanCounter';
+import { PressableScale } from '@/components/ui/PressableScale';
 import { Screen } from '@/components/ui/Screen';
 import { listScanners, ScannerConfig } from '@/features/scanners/registry';
 import { t } from '@/i18n';
@@ -28,31 +31,39 @@ export default function Home() {
 
   return (
     <Screen>
-      <View style={{ gap: spacing.md }}>
-        <Text style={type.title}>
-          {pet?.nombre ? t('home.greeting', { name: pet.nombre }) : t('home.greetingNoPet')}
-        </Text>
+      <FadeIn style={styles.header} offsetY={8}>
+        <PetAvatar uri={pet?.fotoUri} size={52} />
+        <View style={{ flex: 1 }}>
+          <Text style={type.title}>
+            {pet?.nombre ? t('home.greeting', { name: pet.nombre }) : t('home.greetingNoPet')}
+          </Text>
+        </View>
+      </FadeIn>
+
+      <FadeIn delay={90}>
         <ScanCounter />
-      </View>
+      </FadeIn>
 
       <Text style={[type.heading, styles.section]}>{t('home.scanners')}</Text>
       <View style={{ gap: spacing.md }}>
-        {listScanners().map((scanner) => (
-          <Pressable key={scanner.id} style={styles.card} onPress={() => openScanner(scanner)}>
-            <Text style={styles.cardEmoji}>{scanner.emoji}</Text>
-            <View style={{ flex: 1, gap: 2 }}>
-              <Text style={type.heading}>{t(scanner.titleKey)}</Text>
-              <Text style={type.bodyMuted}>{t(scanner.subtitleKey)}</Text>
-            </View>
-            <Text style={styles.chevron}>›</Text>
-          </Pressable>
+        {listScanners().map((scanner, index) => (
+          <FadeIn key={scanner.id} delay={160 + index * 90}>
+            <PressableScale style={styles.card} onPress={() => openScanner(scanner)}>
+              <Text style={styles.cardEmoji}>{scanner.emoji}</Text>
+              <View style={{ flex: 1, gap: 2 }}>
+                <Text style={type.heading}>{t(scanner.titleKey)}</Text>
+                <Text style={type.bodyMuted}>{t(scanner.subtitleKey)}</Text>
+              </View>
+              <Text style={styles.chevron}>›</Text>
+            </PressableScale>
+          </FadeIn>
         ))}
       </View>
 
       {lastScan && (
-        <>
+        <FadeIn delay={160 + listScanners().length * 90}>
           <Text style={[type.heading, styles.section]}>{t('home.lastScan')}</Text>
-          <Pressable
+          <PressableScale
             style={styles.lastScan}
             onPress={() => router.push(`/resultado/${lastScan.id}`)}
           >
@@ -74,14 +85,15 @@ export default function Home() {
               <Text style={type.small}>{formatScanDate(lastScan.createdAt)}</Text>
             </View>
             <Text style={styles.chevron}>›</Text>
-          </Pressable>
-        </>
+          </PressableScale>
+        </FadeIn>
       )}
     </Screen>
   );
 }
 
 const styles = StyleSheet.create({
+  header: { flexDirection: 'row', alignItems: 'center', gap: spacing.md },
   section: { marginTop: spacing.xl, marginBottom: spacing.md },
   card: {
     flexDirection: 'row',

@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { KeyboardAvoidingView, Platform, StyleSheet, Text, View } from 'react-native';
 
 import { BreedPicker } from '@/components/BreedPicker';
+import { PetAvatar } from '@/components/PetAvatar';
 import { Button } from '@/components/ui/Button';
 import { Field } from '@/components/ui/Field';
 import { ProgressBar } from '@/components/ui/ProgressBar';
@@ -22,6 +23,7 @@ export default function OnboardingPet() {
   const addPet = useAppStore((s) => s.addPet);
   const updatePet = useAppStore((s) => s.updatePet);
 
+  const [foto, setFoto] = useState<string | undefined>(existing?.fotoUri);
   const [nombre, setNombre] = useState(existing?.nombre ?? '');
   const [raza, setRaza] = useState<string | undefined>(existing?.raza);
   const [edad, setEdad] = useState(existing?.edadAnios ? String(existing.edadAnios) : '');
@@ -30,6 +32,7 @@ export default function OnboardingPet() {
     const data = {
       nombre: nombre.trim(),
       raza,
+      fotoUri: foto,
       edadAnios: edad ? Number(edad.replace(',', '.')) || undefined : undefined,
     };
     if (existing) {
@@ -46,6 +49,9 @@ export default function OnboardingPet() {
         <ProgressBar step={3} total={5} />
         <View style={styles.center}>
           <Text style={[type.title, { textAlign: 'center' }]}>{t('ob.pet.title')}</Text>
+          <View style={styles.avatar}>
+            <PetAvatar uri={foto} size={92} onChange={setFoto} />
+          </View>
           <View style={{ gap: spacing.md, width: '100%' }}>
             <Field
               placeholder={t('ob.pet.namePlaceholder')}
@@ -74,4 +80,5 @@ export default function OnboardingPet() {
 
 const styles = StyleSheet.create({
   center: { flex: 1, justifyContent: 'center', gap: spacing.lg },
+  avatar: { alignItems: 'center' },
 });

@@ -1,6 +1,7 @@
 import { router } from 'expo-router';
 import { Alert, Linking, Pressable, StyleSheet, Text, View } from 'react-native';
 
+import { PetAvatar } from '@/components/PetAvatar';
 import { Screen } from '@/components/ui/Screen';
 import { APP_VERSION, SUPPORT_EMAIL } from '@/config/app';
 import { t } from '@/i18n';
@@ -23,11 +24,17 @@ export default function Settings() {
       <Text style={type.title}>{t('settings.title')}</Text>
 
       <Section title={t('settings.pet.section')}>
-        <Row
-          label={pet ? `🐶 ${pet.nombre}` : t('pet.edit.newTitle')}
-          detail={t('settings.pet.edit')}
-          onPress={() => router.push('/mascota')}
-        />
+        <Pressable style={styles.petRow} onPress={() => router.push('/mascota')}>
+          <PetAvatar uri={pet?.fotoUri} size={44} />
+          <View style={{ flex: 1 }}>
+            <Text style={[type.body, { fontWeight: '700' }]}>
+              {pet?.nombre ?? t('pet.edit.newTitle')}
+            </Text>
+            {pet?.raza ? <Text style={type.small}>{pet.raza}</Text> : null}
+          </View>
+          <Text style={type.small}>{t('settings.pet.edit')}</Text>
+          <Text style={styles.chevron}>›</Text>
+        </Pressable>
         {!premium && <Text style={[type.small, styles.note]}>{t('settings.pet.addLocked')}</Text>}
       </Section>
 
@@ -94,6 +101,17 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: colors.border,
+  },
+  petRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
+    backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: radius.md,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.md,
   },
   chevron: { fontSize: 22, color: colors.textMuted },
   note: { paddingHorizontal: spacing.xs },

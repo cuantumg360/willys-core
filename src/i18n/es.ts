@@ -151,6 +151,11 @@ export const es = {
   // ── Perfil de mascota ───────────────────────────────────────────────
   'pet.edit.title': 'Perfil de {name}',
   'pet.edit.newTitle': 'Nuevo perfil',
+  'pet.photo.title': 'Foto de tu perro',
+  'pet.photo.camera': 'Hacer una foto',
+  'pet.photo.gallery': 'Elegir de la galería',
+  'pet.photo.add': 'Añadir foto',
+  'pet.photo.change': 'Cambiar foto',
 
   // ── Legal (placeholders, sustituir por textos revisados) ───────────
   'legal.terms.title': 'Términos de uso',

@@ -1,4 +1,5 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { useEffect, useRef, useState } from 'react';
+import { Animated, Easing, StyleSheet, Text, View } from 'react-native';
 import Svg, { Circle, Line, Path } from 'react-native-svg';
 
 import { bcsColor, colors, type } from '@/theme';
@@ -9,6 +10,7 @@ const CX = W / 2;
 const CY = H - 14;
 const R = 116;
 const STROKE = 22;
+const REVEAL_MS = 1100;
 
 // Tramos del semáforo en la escala BCS 1-9 (4-5 = ideal).
 const SEGMENTS: { from: number; to: number; color: string }[] = [
@@ -35,11 +37,30 @@ function arcPath(fromAngle: number, toAngle: number): string {
   return `M ${start.x} ${start.y} A ${R} ${R} 0 0 1 ${end.x} ${end.y}`;
 }
 
-/** Gauge semicircular tipo semáforo para la escala BCS 1-9. */
+/**
+ * Gauge semicircular tipo semáforo para la escala BCS 1-9. Al aparecer, la
+ * aguja barre desde el mínimo hasta el valor y el número cuenta a la par.
+ */
 export function Gauge({ value, categoria }: { value: number; categoria: string }) {
-  const needleAngle = angleFor(value, 1, 9);
+  const anim = useRef(new Animated.Value(1)).current;
+  const [display, setDisplay] = useState(1);
+
+  useEffect(() => {
+    const id = anim.addListener(({ value: v }) => setDisplay(v));
+    anim.setValue(1);
+    Animated.timing(anim, {
+      toValue: value,
+      duration: REVEAL_MS,
+      easing: Easing.out(Easing.cubic),
+      useNativeDriver: false,
+    }).start();
+    return () => anim.removeListener(id);
+  }, [value, anim]);
+
+  const needleAngle = angleFor(display, 1, 9);
   const tip = point(needleAngle, R - STROKE / 2 - 8);
   const valueColor = bcsColor(value);
+  const shown = Number.isInteger(value) ? String(Math.round(display)) : display.toFixed(1);
 
   return (
     <View style={styles.wrap}>
@@ -57,7 +78,7 @@ export function Gauge({ value, categoria }: { value: number; categoria: string }
         <Line x1={CX} y1={CY} x2={tip.x} y2={tip.y} stroke={colors.text} strokeWidth={4} strokeLinecap="round" />
         <Circle cx={CX} cy={CY} r={8} fill={colors.text} />
       </Svg>
-      <Text style={[styles.value, { color: valueColor }]}>{value}</Text>
+      <Text style={[styles.value, { color: valueColor }]}>{shown}</Text>
       <Text style={[styles.categoria, { color: valueColor }]}>{categoria}</Text>
     </View>
   );

@@ -1,6 +1,7 @@
 import { router } from 'expo-router';
 import { StyleSheet, Text, View } from 'react-native';
 
+import { FadeIn } from '@/components/anim/FadeIn';
 import { Button } from '@/components/ui/Button';
 import { ProgressBar } from '@/components/ui/ProgressBar';
 import { Screen } from '@/components/ui/Screen';
@@ -21,14 +22,14 @@ export default function OnboardingHow() {
       <View style={styles.center}>
         <Text style={[type.title, { textAlign: 'center' }]}>{t('ob.how.title')}</Text>
         <View style={{ gap: spacing.md, width: '100%' }}>
-          {STEPS.map((step) => (
-            <View key={step.titleKey} style={styles.card}>
+          {STEPS.map((step, index) => (
+            <FadeIn key={step.titleKey} delay={index * 120} style={styles.card}>
               <Text style={styles.emoji}>{step.emoji}</Text>
               <View style={styles.texts}>
                 <Text style={type.heading}>{t(step.titleKey)}</Text>
                 <Text style={type.bodyMuted}>{t(step.descKey)}</Text>
               </View>
-            </View>
+            </FadeIn>
           ))}
         </View>
       </View>

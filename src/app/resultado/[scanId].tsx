@@ -1,8 +1,10 @@
+import * as Haptics from 'expo-haptics';
 import { router, useLocalSearchParams } from 'expo-router';
-import { useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { Alert, StyleSheet, Text, View } from 'react-native';
 import * as Sharing from 'expo-sharing';
 
+import { FadeIn } from '@/components/anim/FadeIn';
 import { Disclaimer, VetBanner } from '@/components/result/Banners';
 import { DetailRow } from '@/components/result/DetailRow';
 import { Gauge } from '@/components/result/Gauge';
@@ -15,7 +17,7 @@ import { t } from '@/i18n';
 import { track } from '@/services/analytics';
 import { usePendingScan } from '@/store/usePendingScan';
 import { useAppStore, usePrimaryPet } from '@/store/useAppStore';
-import { colors, radius, spacing, type } from '@/theme';
+import { bcsColor, colors, radius, scoreColor, spacing, type } from '@/theme';
 
 /**
  * Pantalla de resultado. scanId === "ultimo" muestra el análisis
@@ -31,6 +33,23 @@ export default function Result() {
 
   const result = scanId === 'ultimo' ? lastResult : scan?.result;
   const scanner = getScanner(scan?.scannerId ?? scannerId ?? result?.tipo ?? '');
+
+  // Háptico de revelación, acorde al veredicto (éxito / aviso / alerta).
+  useEffect(() => {
+    if (!result || result.confianza === 'baja') return;
+    const color =
+      result.tipo === 'condicion_corporal'
+        ? bcsColor(result.puntuacion)
+        : scoreColor(result.puntuacion);
+    const feedback =
+      color === colors.good
+        ? Haptics.NotificationFeedbackType.Success
+        : color === colors.warn
+          ? Haptics.NotificationFeedbackType.Warning
+          : Haptics.NotificationFeedbackType.Error;
+    const timer = setTimeout(() => Haptics.notificationAsync(feedback), 250);
+    return () => clearTimeout(timer);
+  }, [result]);
 
   if (!result || !scanner) {
     router.replace('/inicio');
@@ -85,37 +104,41 @@ export default function Result() {
 
   return (
     <Screen>
-      <View style={styles.scoreCard}>
+      <FadeIn style={styles.scoreCard} offsetY={8}>
         {scanner.resultKind === 'gauge-bcs' ? (
           <Gauge value={result.puntuacion} categoria={result.categoria} />
         ) : (
           <ScoreBar value={result.puntuacion} categoria={result.categoria} />
         )}
         <Text style={[type.small, { textAlign: 'center' }]}>{t(scanner.scaleLabelKey)}</Text>
-      </View>
+      </FadeIn>
 
       <View style={{ gap: spacing.lg, marginTop: spacing.lg }}>
-        <View style={{ gap: spacing.sm }}>
+        <FadeIn delay={140} style={{ gap: spacing.sm }}>
           <Text style={type.title}>{result.titulo_resultado}</Text>
           <Text style={type.bodyMuted}>{result.explicacion}</Text>
           {result.confianza === 'media' && (
             <Text style={[type.small, { fontStyle: 'italic' }]}>{t('result.confidence.media')}</Text>
           )}
-        </View>
+        </FadeIn>
 
-        {result.requiere_veterinario && <VetBanner />}
+        {result.requiere_veterinario && (
+          <FadeIn delay={220}>
+            <VetBanner />
+          </FadeIn>
+        )}
 
         {result.detalles.length > 0 && (
-          <View style={{ gap: spacing.md }}>
+          <FadeIn delay={300} style={{ gap: spacing.md }}>
             <Text style={type.heading}>{t('result.details')}</Text>
             {result.detalles.map((detail) => (
               <DetailRow key={detail.nombre} detail={detail} />
             ))}
-          </View>
+          </FadeIn>
         )}
 
         {result.recomendaciones.length > 0 && (
-          <View style={{ gap: spacing.sm }}>
+          <FadeIn delay={380} style={{ gap: spacing.sm }}>
             <Text style={type.heading}>{t('result.recommendations')}</Text>
             {result.recomendaciones.map((reco) => (
               <View key={reco} style={styles.reco}>
@@ -123,15 +146,16 @@ export default function Result() {
                 <Text style={[type.body, { flex: 1 }]}>{reco}</Text>
               </View>
             ))}
-          </View>
+          </FadeIn>
         )}
 
-        <Disclaimer />
-
-        <View style={{ gap: spacing.sm }}>
-          <Button label={t('common.share')} onPress={share} variant="secondary" />
-          <Button label={t('common.done')} onPress={goHome} />
-        </View>
+        <FadeIn delay={460} style={{ gap: spacing.lg }}>
+          <Disclaimer />
+          <View style={{ gap: spacing.sm }}>
+            <Button label={t('common.share')} onPress={share} variant="secondary" />
+            <Button label={t('common.done')} onPress={goHome} />
+          </View>
+        </FadeIn>
       </View>
 
       {/* Card de marca renderizada fuera de pantalla para capturar y compartir */}
