@@ -122,6 +122,8 @@ export const es = {
   'result.lowConfidence.title': 'No hemos podido analizar bien la foto',
   'result.lowConfidence.retry': 'Repetir foto',
   'result.share.footer': 'Escaneado con {app} 🐾',
+  'result.share.unavailableTitle': 'Compartir aún no disponible',
+  'result.share.unavailableBody': 'La tarjeta para compartir funcionará en la app instalada desde la App Store. En la versión de prueba (Expo Go) esta función está desactivada.',
 
   // ── Historial ───────────────────────────────────────────────────────
   'history.title': 'Historial',

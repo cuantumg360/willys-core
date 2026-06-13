@@ -1,7 +1,6 @@
 import { router, useLocalSearchParams } from 'expo-router';
 import { useRef } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import { captureRef } from 'react-native-view-shot';
+import { Alert, StyleSheet, Text, View } from 'react-native';
 import * as Sharing from 'expo-sharing';
 
 import { Disclaimer, VetBanner } from '@/components/result/Banners';
@@ -45,9 +44,19 @@ export default function Result() {
 
   const share = async () => {
     if (!shareRef.current) return;
-    const uri = await captureRef(shareRef, { format: 'png', quality: 1 });
-    await Sharing.shareAsync(uri);
-    track('resultado_compartido', { scanner: scanner.id });
+    try {
+      // react-native-view-shot es un módulo nativo que NO existe en Expo Go:
+      // se carga de forma diferida (solo al compartir) para no romper el
+      // arranque. La captura real funciona en el development build / la app
+      // compilada; en Expo Go avisamos en lugar de fallar.
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const { captureRef } = require('react-native-view-shot');
+      const uri = await captureRef(shareRef, { format: 'png', quality: 1 });
+      await Sharing.shareAsync(uri);
+      track('resultado_compartido', { scanner: scanner.id });
+    } catch {
+      Alert.alert(t('result.share.unavailableTitle'), t('result.share.unavailableBody'));
+    }
   };
 
   // Foto no válida: pedimos repetirla, sin resultado ni consumo de escaneo
