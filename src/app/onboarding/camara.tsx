@@ -34,7 +34,7 @@ export default function OnboardingCamera() {
   };
 
   return (
-    <Screen scroll={false}>
+    <Screen>
       <ProgressBar step={4} total={5} />
       <View style={styles.center}>
         <Pop>

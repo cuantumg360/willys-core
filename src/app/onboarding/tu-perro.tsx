@@ -45,7 +45,7 @@ export default function OnboardingPet() {
 
   return (
     <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-      <Screen scroll={false}>
+      <Screen>
         <ProgressBar step={3} total={5} />
         <View style={styles.center}>
           <Text style={[type.title, { textAlign: 'center' }]}>{t('ob.pet.title')}</Text>

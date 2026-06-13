@@ -26,8 +26,9 @@ export default function RootLayout() {
       >
         {/* Login: sin gesto de cierre (es la puerta de entrada cuando no hay sesión) */}
         <Stack.Screen name="auth" options={{ gestureEnabled: false }} />
-        {/* El paywall es modal y sin gesto de cierre: se cierra con la X (tras 2 s) o comprando */}
-        <Stack.Screen name="paywall" options={{ presentation: 'modal', gestureEnabled: false }} />
+        {/* Paywall a pantalla completa (NO modal): evita solapes al encadenarlo
+            en el onboarding. Se cierra con la X (tras 2 s) o comprando. */}
+        <Stack.Screen name="paywall" options={{ gestureEnabled: false }} />
         <Stack.Screen name="mascota" options={{ presentation: 'modal' }} />
         <Stack.Screen
           name="mascotas"

@@ -126,6 +126,12 @@ export default function Paywall() {
           {plan === 'annual' ? t('paywall.trialNote') : t('paywall.weeklyNote')}
         </Text>
 
+        {showClose && (
+          <Pressable onPress={close} hitSlop={8} style={{ paddingVertical: spacing.xs }}>
+            <Text style={styles.maybeLater}>{t('paywall.maybeLater')}</Text>
+          </Pressable>
+        )}
+
         <View style={styles.footer}>
           <Pressable onPress={doRestore} hitSlop={8}>
             <Text style={styles.footerLink}>{t('paywall.restore')}</Text>
@@ -228,4 +234,5 @@ const styles = StyleSheet.create({
     marginTop: spacing.sm,
   },
   footerLink: { ...type.small, textDecorationLine: 'underline' },
+  maybeLater: { ...type.small, color: colors.textMuted, fontWeight: '600', textAlign: 'center' },
 });

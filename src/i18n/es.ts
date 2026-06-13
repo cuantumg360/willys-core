@@ -91,6 +91,7 @@ export const es = {
   'paywall.cta.buy': 'Continuar',
   'paywall.trialNote': 'Después, 29,99 €/año. Cancela cuando quieras desde el App Store.',
   'paywall.weeklyNote': 'Se renueva cada semana. Cancela cuando quieras desde el App Store.',
+  'paywall.maybeLater': 'Quizás más tarde · seguir con escaneos gratis',
   'paywall.restore': 'Restaurar compras',
   'paywall.terms': 'Términos de uso',
   'paywall.privacy': 'Privacidad',

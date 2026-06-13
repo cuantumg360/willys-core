@@ -30,5 +30,8 @@ export function createMockPurchases(): PurchasesProvider {
     async restore() {
       return (await AsyncStorage.getItem(PREMIUM_KEY)) === '1';
     },
+    async reset() {
+      await AsyncStorage.removeItem(PREMIUM_KEY);
+    },
   };
 }

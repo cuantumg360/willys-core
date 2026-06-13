@@ -42,6 +42,8 @@ interface PurchasesState {
   init: () => Promise<void>;
   purchase: (plan: PlanId) => Promise<boolean>;
   restore: () => Promise<boolean>;
+  /** Reinicia el estado premium (para volver a gratis; útil en desarrollo). */
+  reset: () => Promise<void>;
 }
 
 export const usePurchases = create<PurchasesState>((set) => ({
@@ -79,5 +81,10 @@ export const usePurchases = create<PurchasesState>((set) => ({
     set({ premium });
     if (premium) track('compra_restaurada');
     return premium;
+  },
+
+  reset: async () => {
+    await purchases().reset?.();
+    set({ premium: false });
   },
 }));

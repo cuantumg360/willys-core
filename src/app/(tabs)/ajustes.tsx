@@ -18,6 +18,7 @@ export default function Settings() {
   const resetAll = useAppStore((s) => s.resetAll);
   const premium = usePurchases((s) => s.premium);
   const restore = usePurchases((s) => s.restore);
+  const resetPurchases = usePurchases((s) => s.reset);
   const userEmail = useAuth((s) => s.user?.email);
   const signOut = useAuth((s) => s.signOut);
   const deleteAccount = useAuth((s) => s.deleteAccount);
@@ -63,6 +64,7 @@ export default function Settings() {
         style: 'destructive',
         onPress: async () => {
           await cloud.wipe();
+          await resetPurchases();
           resetAll();
           router.replace('/onboarding');
         },

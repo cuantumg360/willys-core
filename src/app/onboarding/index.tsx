@@ -12,7 +12,7 @@ import { colors, radius, shadow, spacing, type } from '@/theme';
 /** Onboarding 1/5 — hook emocional. */
 export default function OnboardingHook() {
   return (
-    <Screen scroll={false}>
+    <Screen>
       <ProgressBar step={1} total={5} />
       <View style={styles.center}>
         <Pop style={styles.heroOuter}>
@@ -42,25 +42,25 @@ export default function OnboardingHook() {
 }
 
 const styles = StyleSheet.create({
-  center: { flex: 1, justifyContent: 'center', alignItems: 'center', gap: spacing.lg },
+  center: { flex: 1, justifyContent: 'center', alignItems: 'center', gap: spacing.md, paddingVertical: spacing.lg },
   heroOuter: {
-    width: 184,
-    height: 184,
-    borderRadius: 92,
+    width: 152,
+    height: 152,
+    borderRadius: 76,
     backgroundColor: colors.surfaceMuted,
     alignItems: 'center',
     justifyContent: 'center',
   },
   heroInner: {
-    width: 140,
-    height: 140,
-    borderRadius: 70,
+    width: 116,
+    height: 116,
+    borderRadius: 58,
     backgroundColor: colors.primarySoft,
     alignItems: 'center',
     justifyContent: 'center',
     ...shadow.soft,
   },
-  emoji: { fontSize: 78 },
+  emoji: { fontSize: 62 },
   badge: {
     backgroundColor: colors.surface,
     borderRadius: radius.pill,

@@ -17,7 +17,7 @@ const STEPS: { emoji: string; titleKey: TKey; descKey: TKey }[] = [
 /** Onboarding 2/5 — cómo funciona en 3 pasos. */
 export default function OnboardingHow() {
   return (
-    <Screen scroll={false}>
+    <Screen>
       <ProgressBar step={2} total={5} />
       <View style={styles.center}>
         <Text style={[type.title, { textAlign: 'center' }]}>{t('ob.how.title')}</Text>

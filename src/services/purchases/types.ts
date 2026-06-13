@@ -27,6 +27,8 @@ export interface PurchasesProvider {
   purchase(plan: PlanId): Promise<boolean>;
   /** Restaura compras anteriores. Devuelve si el usuario queda premium. */
   restore(): Promise<boolean>;
+  /** Reinicia el estado premium local (solo mock/desarrollo). */
+  reset?(): Promise<void>;
   /** Suscripción a cambios de estado premium (opcional). */
   onChange?(callback: (premium: boolean) => void): () => void;
 }
