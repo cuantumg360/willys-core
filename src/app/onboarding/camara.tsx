@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/Button';
 import { ProgressBar } from '@/components/ui/ProgressBar';
 import { Screen } from '@/components/ui/Screen';
 import { t } from '@/i18n';
+import { useAuth } from '@/store/useAuth';
 import { usePrimaryPet } from '@/store/useAppStore';
 import { colors, spacing, type } from '@/theme';
 
@@ -19,9 +20,13 @@ import { colors, spacing, type } from '@/theme';
 export default function OnboardingCamera() {
   const pet = usePrimaryPet();
   const [, requestPermission] = useCameraPermissions();
+  const authed = useAuth((s) => s.status === 'authed');
   const name = pet?.nombre ?? 'tu perro';
 
-  const goNext = () => router.push('/paywall?context=onboarding');
+  // Si aún no hay cuenta, el onboarding continúa por el registro; si ya la
+  // hay (p. ej. al repetir el tutorial), salta directo a la oferta.
+  const goNext = () =>
+    router.push(authed ? '/paywall?context=onboarding' : '/auth?context=onboarding');
 
   const ask = async () => {
     await requestPermission();

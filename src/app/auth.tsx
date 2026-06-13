@@ -1,4 +1,4 @@
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 import { KeyboardAvoidingView, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 
@@ -6,15 +6,21 @@ import { FadeIn } from '@/components/anim/FadeIn';
 import { Pop } from '@/components/anim/Pop';
 import { Button } from '@/components/ui/Button';
 import { Field } from '@/components/ui/Field';
+import { ProgressBar } from '@/components/ui/ProgressBar';
 import { Screen } from '@/components/ui/Screen';
 import { APP_NAME } from '@/config/app';
 import { t } from '@/i18n';
 import { useAuth } from '@/store/useAuth';
 import { colors, radius, shadow, spacing, type } from '@/theme';
 
-/** Bienvenida + login / registro. Puerta de entrada cuando no hay sesión. */
+/** Bienvenida + login / registro. Tras el onboarding (primera vez) o como
+ * puerta de entrada para usuarios que ya hicieron el onboarding. */
 export default function Auth() {
-  const [mode, setMode] = useState<'signIn' | 'signUp'>('signUp');
+  const { context } = useLocalSearchParams<{ context?: string }>();
+  const fromOnboarding = context === 'onboarding';
+
+  // En el onboarding empezamos en "crear cuenta"; si no, en "iniciar sesión".
+  const [mode, setMode] = useState<'signIn' | 'signUp'>(fromOnboarding ? 'signUp' : 'signIn');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
@@ -30,8 +36,11 @@ export default function Auth() {
     const ok = isSignUp
       ? await signUp(email, password)
       : await signIn(email, password);
-    // Al autenticarse, la puerta de entrada (index) reencamina solo.
-    if (ok) router.replace('/');
+    if (!ok) return;
+    // En el onboarding seguimos a la oferta; si no, la puerta de entrada
+    // (index) reencamina sola a la app.
+    if (fromOnboarding) router.replace('/paywall?context=onboarding');
+    else router.replace('/');
   };
 
   const toggle = () => {
@@ -42,6 +51,7 @@ export default function Auth() {
   return (
     <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
       <Screen>
+        {fromOnboarding && <ProgressBar step={5} total={5} />}
         <View style={styles.hero}>
           <Pop style={styles.logo}>
             <Text style={styles.logoEmoji}>🐾</Text>
