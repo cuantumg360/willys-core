@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/Button';
 import { ProgressBar } from '@/components/ui/ProgressBar';
 import { Screen } from '@/components/ui/Screen';
 import { t, TKey } from '@/i18n';
-import { colors, radius, spacing, type } from '@/theme';
+import { colors, radius, shadow, spacing, type } from '@/theme';
 
 const STEPS: { emoji: string; titleKey: TKey; descKey: TKey }[] = [
   { emoji: '📸', titleKey: 'ob.how.step1.title', descKey: 'ob.how.step1.desc' },
@@ -45,10 +45,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: spacing.md,
     backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.border,
     borderRadius: radius.lg,
     padding: spacing.md,
+    ...shadow.card,
   },
   emoji: { fontSize: 36 },
   texts: { flex: 1, gap: 2 },

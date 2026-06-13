@@ -14,6 +14,8 @@ interface AppState {
   hydrated: boolean;
   onboardingDone: boolean;
   pets: Pet[];
+  /** Mascota seleccionada (sobre la que se escanea y a la que saluda la app). */
+  activePetId?: string;
   scans: ScanRecord[];
   /** Escaneos gratis consumidos (freemium duro: 3 en total). */
   freeScansUsed: number;
@@ -21,8 +23,12 @@ interface AppState {
   setOnboardingDone: () => void;
   addPet: (pet: Pet) => void;
   updatePet: (id: string, changes: Partial<Pet>) => void;
+  removePet: (id: string) => void;
+  setActivePet: (id: string) => void;
   addScan: (scan: ScanRecord) => void;
   consumeFreeScan: () => void;
+  /** Borra todos los datos locales (mascotas, escaneos, progreso). */
+  resetAll: () => void;
 }
 
 export const useAppStore = create<AppState>()(
@@ -31,15 +37,36 @@ export const useAppStore = create<AppState>()(
       hydrated: false,
       onboardingDone: false,
       pets: [],
+      activePetId: undefined,
       scans: [],
       freeScansUsed: 0,
 
       setOnboardingDone: () => set({ onboardingDone: true }),
-      addPet: (pet) => set((s) => ({ pets: [...s.pets, pet] })),
+      // Al añadir una mascota pasa a ser la activa.
+      addPet: (pet) => set((s) => ({ pets: [...s.pets, pet], activePetId: pet.id })),
       updatePet: (id, changes) =>
         set((s) => ({ pets: s.pets.map((p) => (p.id === id ? { ...p, ...changes } : p)) })),
+      removePet: (id) =>
+        set((s) => {
+          const pets = s.pets.filter((p) => p.id !== id);
+          return {
+            pets,
+            // Sus escaneos se eliminan con ella; la activa pasa a la primera restante.
+            scans: s.scans.filter((scan) => scan.petId !== id),
+            activePetId: s.activePetId === id ? pets[0]?.id : s.activePetId,
+          };
+        }),
+      setActivePet: (id) => set({ activePetId: id }),
       addScan: (scan) => set((s) => ({ scans: [scan, ...s.scans] })),
       consumeFreeScan: () => set((s) => ({ freeScansUsed: s.freeScansUsed + 1 })),
+      resetAll: () =>
+        set({
+          onboardingDone: false,
+          pets: [],
+          activePetId: undefined,
+          scans: [],
+          freeScansUsed: 0,
+        }),
     }),
     {
       name: 'willy-app-v1',
@@ -57,7 +84,12 @@ export function freeScansLeft(freeScansUsed: number): number {
   return Math.max(0, FREE_SCANS_TOTAL - freeScansUsed);
 }
 
-/** Mascota principal (la primera; multi-perro es premium). */
+/** Devuelve la mascota activa de un estado (activa elegida o la primera). */
+export function selectActivePet(state: AppState): Pet | undefined {
+  return state.pets.find((p) => p.id === state.activePetId) ?? state.pets[0];
+}
+
+/** Mascota activa (sobre la que se escanea y a la que saluda la app). */
 export function usePrimaryPet(): Pet | undefined {
-  return useAppStore((s) => s.pets[0]);
+  return useAppStore(selectActivePet);
 }

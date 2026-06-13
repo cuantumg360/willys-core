@@ -10,10 +10,12 @@ import { bcsColor, colors, radius, scoreColor, spacing, type } from '@/theme';
 import { formatScanDate } from '@/utils/dates';
 
 export default function History() {
-  const scans = useAppStore((s) => s.scans);
   const pet = usePrimaryPet();
+  const allScans = useAppStore((s) => s.scans);
+  // Historial de la mascota activa (los escaneos sin mascota también, por compatibilidad).
+  const scans = allScans.filter((scan) => !scan.petId || scan.petId === pet?.id);
 
-  // Evolución BCS del perro principal (orden cronológico ascendente)
+  // Evolución BCS de la mascota activa (orden cronológico ascendente)
   const bcsValues = scans
     .filter((s) => s.result.tipo === 'condicion_corporal' && s.result.confianza !== 'baja')
     .map((s) => s.result.puntuacion)

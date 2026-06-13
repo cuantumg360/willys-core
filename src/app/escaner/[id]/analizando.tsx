@@ -10,7 +10,7 @@ import { analyze } from '@/services/analysis';
 import { track } from '@/services/analytics';
 import { usePurchases } from '@/services/purchases';
 import { usePendingScan } from '@/store/usePendingScan';
-import { useAppStore } from '@/store/useAppStore';
+import { selectActivePet, useAppStore } from '@/store/useAppStore';
 import { colors, radius, spacing, type } from '@/theme';
 import { newId } from '@/utils/id';
 
@@ -58,8 +58,8 @@ export default function Analyzing() {
     );
 
     const run = async () => {
-      const { pets, addScan, consumeFreeScan } = useAppStore.getState();
-      const pet = pets[0];
+      const { addScan, consumeFreeScan } = useAppStore.getState();
+      const pet = selectActivePet(useAppStore.getState());
 
       const [result] = await Promise.all([
         analyze({

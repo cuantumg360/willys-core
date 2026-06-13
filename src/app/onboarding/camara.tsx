@@ -2,20 +2,24 @@ import { useCameraPermissions } from 'expo-camera';
 import { router } from 'expo-router';
 import { StyleSheet, Text, View } from 'react-native';
 
+import { FadeIn } from '@/components/anim/FadeIn';
+import { Pop } from '@/components/anim/Pop';
+import { PetAvatar } from '@/components/PetAvatar';
 import { Button } from '@/components/ui/Button';
 import { ProgressBar } from '@/components/ui/ProgressBar';
 import { Screen } from '@/components/ui/Screen';
 import { t } from '@/i18n';
 import { usePrimaryPet } from '@/store/useAppStore';
-import { spacing, type } from '@/theme';
+import { colors, spacing, type } from '@/theme';
 
 /**
- * Onboarding 4/5 — pantalla previa al permiso de cámara: explicamos el
- * porqué ANTES de disparar el diálogo del sistema (mejora la aceptación).
+ * Onboarding 4/5 — momento cálido tras crear el perfil: celebramos al
+ * perro y explicamos el porqué de la cámara ANTES del diálogo del sistema.
  */
 export default function OnboardingCamera() {
   const pet = usePrimaryPet();
   const [, requestPermission] = useCameraPermissions();
+  const name = pet?.nombre ?? 'tu perro';
 
   const goNext = () => router.push('/paywall?context=onboarding');
 
@@ -28,11 +32,16 @@ export default function OnboardingCamera() {
     <Screen scroll={false}>
       <ProgressBar step={4} total={5} />
       <View style={styles.center}>
-        <Text style={styles.emoji}>📷</Text>
-        <Text style={[type.title, { textAlign: 'center' }]}>
-          {t('ob.camera.title', { name: pet?.nombre ?? 'tu perro' })}
-        </Text>
-        <Text style={[type.bodyMuted, { textAlign: 'center' }]}>{t('ob.camera.body')}</Text>
+        <Pop>
+          <PetAvatar uri={pet?.fotoUri} size={104} />
+        </Pop>
+        <FadeIn delay={160} style={{ gap: spacing.md }}>
+          <Text style={[type.title, styles.celebrate]}>{t('ob.camera.celebrate', { name })}</Text>
+          <Text style={[type.heading, { textAlign: 'center' }]}>{t('ob.camera.title')}</Text>
+          <Text style={[type.bodyMuted, { textAlign: 'center' }]}>
+            {t('ob.camera.body', { name })}
+          </Text>
+        </FadeIn>
       </View>
       <View style={{ gap: spacing.sm }}>
         <Button label={t('ob.camera.cta')} onPress={ask} />
@@ -44,5 +53,5 @@ export default function OnboardingCamera() {
 
 const styles = StyleSheet.create({
   center: { flex: 1, justifyContent: 'center', alignItems: 'center', gap: spacing.lg },
-  emoji: { fontSize: 72 },
+  celebrate: { textAlign: 'center', color: colors.primaryDark },
 });

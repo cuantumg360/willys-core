@@ -1,6 +1,6 @@
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
-import { KeyboardAvoidingView, Platform, StyleSheet, Text, View } from 'react-native';
+import { Alert, KeyboardAvoidingView, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { BreedPicker } from '@/components/BreedPicker';
 import { PetAvatar } from '@/components/PetAvatar';
@@ -9,14 +9,16 @@ import { Field } from '@/components/ui/Field';
 import { Screen } from '@/components/ui/Screen';
 import { t } from '@/i18n';
 import { useAppStore } from '@/store/useAppStore';
-import { spacing, type } from '@/theme';
+import { colors, spacing, type } from '@/theme';
 import { newId } from '@/utils/id';
 
-/** Perfil de mascota (modal): foto, nombre, raza, edad y peso. */
+/** Perfil de mascota (modal): crear (sin id) o editar (con id) una mascota. */
 export default function PetProfile() {
-  const pet = useAppStore((s) => s.pets[0]);
+  const { id } = useLocalSearchParams<{ id?: string }>();
+  const pet = useAppStore((s) => s.pets.find((p) => p.id === id));
   const addPet = useAppStore((s) => s.addPet);
   const updatePet = useAppStore((s) => s.updatePet);
+  const removePet = useAppStore((s) => s.removePet);
 
   const [foto, setFoto] = useState<string | undefined>(pet?.fotoUri);
   const [nombre, setNombre] = useState(pet?.nombre ?? '');
@@ -35,6 +37,21 @@ export default function PetProfile() {
     if (pet) updatePet(pet.id, data);
     else addPet({ id: newId(), ...data });
     router.back();
+  };
+
+  const confirmDelete = () => {
+    if (!pet) return;
+    Alert.alert(t('pets.deleteTitle', { name: pet.nombre }), t('pets.deleteBody'), [
+      { text: t('common.cancel'), style: 'cancel' },
+      {
+        text: t('common.delete'),
+        style: 'destructive',
+        onPress: () => {
+          removePet(pet.id);
+          router.back();
+        },
+      },
+    ]);
   };
 
   return (
@@ -75,6 +92,11 @@ export default function PetProfile() {
         <View style={{ gap: spacing.sm, marginTop: spacing.lg }}>
           <Button label={t('common.save')} onPress={save} disabled={!nombre.trim()} />
           <Button label={t('common.cancel')} variant="ghost" onPress={() => router.back()} />
+          {pet && (
+            <Pressable onPress={confirmDelete} style={styles.delete} hitSlop={8}>
+              <Text style={styles.deleteText}>{t('pets.delete', { name: pet.nombre })}</Text>
+            </Pressable>
+          )}
         </View>
       </Screen>
     </KeyboardAvoidingView>
@@ -84,4 +106,6 @@ export default function PetProfile() {
 const styles = StyleSheet.create({
   avatar: { alignItems: 'center', marginTop: spacing.lg, marginBottom: spacing.lg },
   form: { gap: spacing.md },
+  delete: { alignItems: 'center', paddingVertical: spacing.md },
+  deleteText: { ...type.body, color: colors.bad, fontWeight: '600' },
 });

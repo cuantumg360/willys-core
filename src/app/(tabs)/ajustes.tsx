@@ -4,13 +4,16 @@ import { Alert, Linking, Pressable, StyleSheet, Text, View } from 'react-native'
 import { PetAvatar } from '@/components/PetAvatar';
 import { Screen } from '@/components/ui/Screen';
 import { APP_VERSION, SUPPORT_EMAIL } from '@/config/app';
+import { MAX_PETS } from '@/config/limits';
 import { t } from '@/i18n';
 import { usePurchases } from '@/services/purchases';
-import { usePrimaryPet } from '@/store/useAppStore';
+import { useAppStore, usePrimaryPet } from '@/store/useAppStore';
 import { colors, radius, spacing, type } from '@/theme';
 
 export default function Settings() {
   const pet = usePrimaryPet();
+  const petCount = useAppStore((s) => s.pets.length);
+  const resetAll = useAppStore((s) => s.resetAll);
   const premium = usePurchases((s) => s.premium);
   const restore = usePurchases((s) => s.restore);
 
@@ -19,20 +22,39 @@ export default function Settings() {
     Alert.alert(restored ? t('settings.sub.active') : t('settings.sub.inactive'));
   };
 
+  const confirmDeleteData = () => {
+    Alert.alert(t('settings.account.deleteTitle'), t('settings.account.deleteBody'), [
+      { text: t('common.cancel'), style: 'cancel' },
+      {
+        text: t('settings.account.deleteCta'),
+        style: 'destructive',
+        onPress: () => {
+          resetAll();
+          router.replace('/onboarding');
+        },
+      },
+    ]);
+  };
+
+  // Ver el tutorial otra vez (no borra datos; al terminar vuelve a inicio).
+  const replayTutorial = () => router.push('/onboarding');
+
   return (
     <Screen>
       <Text style={type.title}>{t('settings.title')}</Text>
 
       <Section title={t('settings.pet.section')}>
-        <Pressable style={styles.petRow} onPress={() => router.push('/mascota')}>
+        <Pressable style={styles.petRow} onPress={() => router.push('/mascotas')}>
           <PetAvatar uri={pet?.fotoUri} size={44} />
           <View style={{ flex: 1 }}>
             <Text style={[type.body, { fontWeight: '700' }]}>
               {pet?.nombre ?? t('pet.edit.newTitle')}
             </Text>
-            {pet?.raza ? <Text style={type.small}>{pet.raza}</Text> : null}
+            <Text style={type.small}>
+              {t('settings.pet.count', { count: petCount, max: premium ? MAX_PETS : 1 })}
+            </Text>
           </View>
-          <Text style={type.small}>{t('settings.pet.edit')}</Text>
+          <Text style={type.small}>{t('settings.pet.manage')}</Text>
           <Text style={styles.chevron}>›</Text>
         </Pressable>
         {!premium && <Text style={[type.small, styles.note]}>{t('settings.pet.addLocked')}</Text>}
@@ -46,6 +68,15 @@ export default function Settings() {
           }}
         />
         <Row label={t('settings.sub.restore')} onPress={doRestore} />
+      </Section>
+
+      <Section title={t('settings.account.section')}>
+        <Row label={t('settings.account.tutorial')} onPress={replayTutorial} />
+        <Row
+          label={t('settings.account.deleteData')}
+          destructive
+          onPress={confirmDeleteData}
+        />
       </Section>
 
       <Section title={t('settings.legal.section')}>
@@ -73,12 +104,22 @@ function Section({ title, children }: { title: string; children: React.ReactNode
   );
 }
 
-function Row({ label, detail, onPress }: { label: string; detail?: string; onPress: () => void }) {
+function Row({
+  label,
+  detail,
+  destructive,
+  onPress,
+}: {
+  label: string;
+  detail?: string;
+  destructive?: boolean;
+  onPress: () => void;
+}) {
   return (
     <Pressable style={styles.row} onPress={onPress}>
-      <Text style={[type.body, { flex: 1 }]}>{label}</Text>
+      <Text style={[type.body, { flex: 1 }, destructive && { color: colors.bad }]}>{label}</Text>
       {detail ? <Text style={type.small}>{detail}</Text> : null}
-      <Text style={styles.chevron}>›</Text>
+      {!destructive && <Text style={styles.chevron}>›</Text>}
     </Pressable>
   );
 }

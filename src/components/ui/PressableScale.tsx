@@ -1,9 +1,9 @@
 import { PropsWithChildren, useRef } from 'react';
-import { Animated, Pressable, ViewStyle } from 'react-native';
+import { Animated, Pressable, StyleProp, ViewStyle } from 'react-native';
 
 interface Props extends PropsWithChildren {
   onPress: () => void;
-  style?: ViewStyle | ViewStyle[];
+  style?: StyleProp<ViewStyle>;
 }
 
 /**

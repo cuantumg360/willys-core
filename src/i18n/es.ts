@@ -19,8 +19,11 @@ export const es = {
   'common.search': 'Buscar…',
   'common.optional': 'opcional',
   'common.notNow': 'Ahora no',
+  'common.delete': 'Eliminar',
+  'common.add': 'Añadir',
 
   // ── Onboarding ───────────────────────────────────────────────────────
+  'ob.hook.badge': '🐾 El cuidado empieza aquí',
   'ob.hook.title': 'La mitad de los perros tiene sobrepeso…',
   'ob.hook.subtitle': '…y sus dueños no lo saben. Haz una foto a tu perro y sal de dudas en segundos.',
   'ob.hook.stat': '1 de cada 2 perros',
@@ -40,10 +43,12 @@ export const es = {
   'ob.pet.breedPlaceholder': 'Elige su raza (o mestizo)',
   'ob.pet.ageLabel': 'Edad aproximada en años ({optional})',
   'ob.pet.agePlaceholder': 'Ej.: 4',
-  'ob.pet.note': 'Usaremos su nombre para personalizar todos sus resultados.',
+  'ob.pet.note': 'Usaremos su nombre y su foto para personalizar toda la app. 💛',
+  'ob.pet.photoHint': 'Ponle cara a {name} (opcional)',
 
-  'ob.camera.title': 'Necesitamos la cámara para ver a {name}',
-  'ob.camera.body': 'Solo usamos la cámara para las fotos que tú decidas hacer. Las fotos se analizan y no se guardan en ningún servidor.',
+  'ob.camera.celebrate': '¡Encantados de conocer a {name}! 🐾',
+  'ob.camera.title': 'Solo falta activar la cámara',
+  'ob.camera.body': 'Es lo único que necesitamos para cuidar de {name}. Solo se usa para las fotos que tú decidas hacer, que se analizan y no se guardan en ningún servidor.',
   'ob.camera.cta': 'Permitir cámara',
 
   // ── Paywall ──────────────────────────────────────────────────────────
@@ -138,18 +143,38 @@ export const es = {
 
   // ── Ajustes ─────────────────────────────────────────────────────────
   'settings.title': 'Ajustes',
-  'settings.pet.section': 'Tu mascota',
+  'settings.pet.section': 'Tus mascotas',
   'settings.pet.edit': 'Editar perfil',
+  'settings.pet.manage': 'Gestionar mascotas',
+  'settings.pet.count': '{count} de {max} perfiles',
   'settings.pet.addLocked': 'Más de un perro: disponible en premium',
   'settings.sub.section': 'Suscripción',
   'settings.sub.active': 'Premium activo',
   'settings.sub.inactive': 'Hazte premium',
   'settings.sub.restore': 'Restaurar compras',
+  'settings.account.section': 'Cuenta',
+  'settings.account.tutorial': 'Ver el tutorial otra vez',
+  'settings.account.deleteData': 'Borrar todos mis datos',
+  'settings.account.deleteTitle': '¿Borrar todos tus datos?',
+  'settings.account.deleteBody': 'Se eliminarán todas tus mascotas, escaneos e historial de este dispositivo. Tu suscripción no se ve afectada (puedes restaurarla). Esto no se puede deshacer.',
+  'settings.account.deleteCta': 'Borrar todo',
   'settings.legal.section': 'Legal',
   'settings.legal.terms': 'Términos de uso',
   'settings.legal.privacy': 'Política de privacidad',
   'settings.contact': 'Contacto',
   'settings.version': 'Versión {version}',
+
+  // ── Mascotas (gestión multi-perfil) ─────────────────────────────────
+  'pets.title': 'Tus mascotas',
+  'pets.subtitle': '{count} de {max} perfiles',
+  'pets.active': 'Activa',
+  'pets.setActive': 'Tocar para activar',
+  'pets.add': 'Añadir mascota',
+  'pets.addLockedFree': 'Tener varios perros es premium. Hazte premium para añadir hasta {max} perfiles.',
+  'pets.maxReached': 'Has alcanzado el máximo de {max} mascotas.',
+  'pets.delete': 'Eliminar a {name}',
+  'pets.deleteTitle': '¿Eliminar a {name}?',
+  'pets.deleteBody': 'Se borrarán su perfil y sus escaneos. Esto no se puede deshacer.',
 
   // ── Perfil de mascota ───────────────────────────────────────────────
   'pet.edit.title': 'Perfil de {name}',

@@ -1,5 +1,5 @@
 import { router } from 'expo-router';
-import { StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { FadeIn } from '@/components/anim/FadeIn';
 import { PetAvatar } from '@/components/PetAvatar';
@@ -38,7 +38,9 @@ export default function Home() {
   return (
     <Screen>
       <FadeIn style={styles.header} offsetY={8}>
-        <PetAvatar uri={pet?.fotoUri} size={56} />
+        <Pressable onPress={() => router.push('/mascotas')}>
+          <PetAvatar uri={pet?.fotoUri} size={56} />
+        </Pressable>
         <View style={{ flex: 1, gap: 3 }}>
           <Text style={styles.eyebrow}>{t('home.greetingEyebrow')}</Text>
           <Text style={styles.greeting}>
