@@ -3,11 +3,14 @@ import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 
 import { track } from '@/services/analytics';
+import { useAuth } from '@/store/useAuth';
 import { colors } from '@/theme';
 
 export default function RootLayout() {
   useEffect(() => {
     track('app_abierta');
+    // Carga la sesión guardada (login) al arrancar.
+    useAuth.getState().init();
   }, []);
 
   return (
@@ -19,6 +22,8 @@ export default function RootLayout() {
           contentStyle: { backgroundColor: colors.background },
         }}
       >
+        {/* Login: sin gesto de cierre (es la puerta de entrada cuando no hay sesión) */}
+        <Stack.Screen name="auth" options={{ gestureEnabled: false }} />
         {/* El paywall es modal y sin gesto de cierre: se cierra con la X (tras 2 s) o comprando */}
         <Stack.Screen name="paywall" options={{ presentation: 'modal', gestureEnabled: false }} />
         <Stack.Screen name="mascota" options={{ presentation: 'modal' }} />

@@ -8,6 +8,7 @@ import { MAX_PETS } from '@/config/limits';
 import { t } from '@/i18n';
 import { usePurchases } from '@/services/purchases';
 import { useAppStore, usePrimaryPet } from '@/store/useAppStore';
+import { useAuth } from '@/store/useAuth';
 import { colors, radius, spacing, type } from '@/theme';
 
 export default function Settings() {
@@ -16,10 +17,41 @@ export default function Settings() {
   const resetAll = useAppStore((s) => s.resetAll);
   const premium = usePurchases((s) => s.premium);
   const restore = usePurchases((s) => s.restore);
+  const userEmail = useAuth((s) => s.user?.email);
+  const signOut = useAuth((s) => s.signOut);
+  const deleteAccount = useAuth((s) => s.deleteAccount);
 
   const doRestore = async () => {
     const restored = await restore();
     Alert.alert(restored ? t('settings.sub.active') : t('settings.sub.inactive'));
+  };
+
+  const confirmSignOut = () => {
+    Alert.alert(t('auth.signOutTitle'), t('auth.signOutBody'), [
+      { text: t('common.cancel'), style: 'cancel' },
+      {
+        text: t('auth.signOut'),
+        onPress: async () => {
+          await signOut();
+          router.replace('/');
+        },
+      },
+    ]);
+  };
+
+  const confirmDeleteAccount = () => {
+    Alert.alert(t('auth.deleteTitle'), t('auth.deleteBody'), [
+      { text: t('common.cancel'), style: 'cancel' },
+      {
+        text: t('auth.deleteAccount'),
+        style: 'destructive',
+        onPress: async () => {
+          await deleteAccount();
+          resetAll();
+          router.replace('/');
+        },
+      },
+    ]);
   };
 
   const confirmDeleteData = () => {
@@ -71,12 +103,21 @@ export default function Settings() {
       </Section>
 
       <Section title={t('settings.account.section')}>
+        {userEmail ? (
+          <View style={styles.row}>
+            <Text style={styles.emailIcon}>👤</Text>
+            <Text style={[type.body, { flex: 1 }]} numberOfLines={1}>
+              {userEmail}
+            </Text>
+          </View>
+        ) : null}
+        <Row label={t('auth.signOut')} onPress={confirmSignOut} />
+        <Row label={t('auth.deleteAccount')} destructive onPress={confirmDeleteAccount} />
+      </Section>
+
+      <Section title={t('settings.data.section')}>
         <Row label={t('settings.account.tutorial')} onPress={replayTutorial} />
-        <Row
-          label={t('settings.account.deleteData')}
-          destructive
-          onPress={confirmDeleteData}
-        />
+        <Row label={t('settings.account.deleteData')} destructive onPress={confirmDeleteData} />
       </Section>
 
       <Section title={t('settings.legal.section')}>
@@ -155,6 +196,7 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.md,
   },
   chevron: { fontSize: 22, color: colors.textMuted },
+  emailIcon: { fontSize: 18 },
   note: { paddingHorizontal: spacing.xs },
   version: { textAlign: 'center', marginTop: spacing.xl },
 });

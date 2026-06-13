@@ -5,6 +5,10 @@
  */
 export type AnalyticsEvent =
   | 'app_abierta'
+  | 'cuenta_creada'
+  | 'sesion_iniciada'
+  | 'sesion_cerrada'
+  | 'cuenta_eliminada'
   | 'onboarding_completado'
   | 'escaneo_iniciado'
   | 'escaneo_completado'

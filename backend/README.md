@@ -1,4 +1,37 @@
-# Backend de análisis (Fase 2 — aún no implementado)
+# Backend
+
+## Cuentas con login (Supabase Auth)
+
+La app ya tiene login integrado (`src/services/auth`). En desarrollo usa un
+**mock local** (registro/login/cerrar sesión funcionan en Expo Go sin
+backend). Para activar las cuentas **reales**:
+
+1. Crea un proyecto gratis en https://supabase.com.
+2. En *Project Settings > API* copia la **Project URL** y la **anon key**.
+3. En la raíz del proyecto, copia `.env.example` a `.env` y rellena:
+   ```
+   EXPO_PUBLIC_SUPABASE_URL=https://xxxx.supabase.co
+   EXPO_PUBLIC_SUPABASE_ANON_KEY=eyJhbGci...
+   ```
+4. Reinicia con `npx expo start --clear`. La app detecta las credenciales y
+   pasa automáticamente del mock a Supabase (registro, login, sesión).
+
+Notas:
+- La *anon key* es **pública** por diseño; la seguridad real la dan las
+  *Row Level Security policies* del proyecto. Nunca pongas la *service role
+  key* en el cliente.
+- **Sincronizar mascotas y escaneos en la nube** (para verlos en varios
+  dispositivos) es el siguiente paso: crear tablas `pets` y `scans` con RLS
+  por `auth.uid()` y guardar/leer desde Supabase. Hoy esos datos viven en
+  el dispositivo; el login ya está listo para colgar de él esa sincronización.
+- **Eliminar la cuenta de verdad** (no solo cerrar sesión) requiere una Edge
+  Function con la *service role key* que llame a `auth.admin.deleteUser()`.
+  El cliente solo cierra sesión y borra los datos locales.
+- *Sign in with Apple*: si más adelante añades login social, Apple exige
+  ofrecer también "Iniciar sesión con Apple" (necesita development build,
+  no funciona en Expo Go).
+
+# Backend de análisis de imágenes (Fase 2 — aún no implementado)
 
 Servicio ligero (Supabase Edge Function o Cloudflare Worker) que hace de
 proxy entre la app y el modelo de visión. **La API key del modelo vive

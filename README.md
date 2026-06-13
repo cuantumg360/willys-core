@@ -48,9 +48,10 @@ src/
 ├── features/scanners/    # REGISTRO de escáneres: añadir uno nuevo = una entrada aquí
 ├── services/
 │   ├── analysis/         # contrato JSON + validación + mock + cliente backend (fase 2)
+│   ├── auth/             # cuentas con login (mock local ↔ Supabase real por env)
 │   ├── purchases/        # interfaz de compras (mock → RevenueCat en fase 3)
 │   └── analytics/        # eventos tipados (consola → PostHog)
-├── store/                # zustand + AsyncStorage (todo local, sin cuentas)
+├── store/                # zustand + AsyncStorage (datos locales en el dispositivo)
 ├── i18n/                 # t() tipado; es.ts único diccionario por ahora
 ├── theme/                # colores/espaciado/tipografía (sin dark mode en MVP)
 └── config/               # APP_NAME, feature flags, límites freemium
@@ -68,6 +69,10 @@ Decisiones clave:
   tocar pantallas.
 - **Confianza "baja"** (foto no válida): se pide repetir la foto, no se
   guarda en historial ni consume escaneo gratis.
+- **Cuentas con login**: `services/auth` usa un mock local en desarrollo y
+  Supabase real al definir `EXPO_PUBLIC_SUPABASE_URL`/`ANON_KEY`. El flujo
+  es login → onboarding (la primera vez) → app. Sincronizar mascotas y
+  escaneos en la nube es el siguiente paso (ver `backend/README.md`).
 
 ## Pasos manuales pendientes (resumen; detalle al llegar a cada fase)
 

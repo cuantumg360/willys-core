@@ -10,3 +10,14 @@ export const SUPPORT_EMAIL = 'hola@willyapp.es'; // TODO: email real de soporte
 
 /** URL del backend de análisis (Fase 2). Se inyecta por variable de entorno. */
 export const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL ?? '';
+
+/**
+ * Credenciales de Supabase (cuentas con login). Si están presentes, la app
+ * usa Supabase real; si no, usa el mock local (para desarrollo en Expo Go).
+ * Se configuran como variables de entorno EXPO_PUBLIC_* (ver .env.example).
+ */
+export const SUPABASE_URL = process.env.EXPO_PUBLIC_SUPABASE_URL ?? '';
+export const SUPABASE_ANON_KEY = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY ?? '';
+
+/** ¿Hay backend de auth real configurado? Si no, se usa el mock. */
+export const hasSupabase = Boolean(SUPABASE_URL && SUPABASE_ANON_KEY);
