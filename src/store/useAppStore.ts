@@ -4,7 +4,7 @@ import { createJSONStorage, persist } from 'zustand/middleware';
 
 import { FREE_SCANS_TOTAL } from '@/config/limits';
 import { cloud } from '@/services/sync';
-import { Pet, ScanRecord } from './types';
+import { HealthRecord, Pet, Reminder, ScanRecord } from './types';
 
 /**
  * Estado persistente de la app (AsyncStorage, todo local al dispositivo:
@@ -18,6 +18,10 @@ interface AppState {
   /** Mascota seleccionada (sobre la que se escanea y a la que saluda la app). */
   activePetId?: string;
   scans: ScanRecord[];
+  /** Historial médico (vacunas, desparasitación, peso, notas…). */
+  healthRecords: HealthRecord[];
+  /** Recordatorios de cuidado (vacunas, desparasitación, comida…). */
+  reminders: Reminder[];
   /** Escaneos gratis consumidos (freemium duro: 3 en total). */
   freeScansUsed: number;
 
@@ -27,6 +31,11 @@ interface AppState {
   removePet: (id: string) => void;
   setActivePet: (id: string) => void;
   addScan: (scan: ScanRecord) => void;
+  addHealthRecord: (record: HealthRecord) => void;
+  removeHealthRecord: (id: string) => void;
+  addReminder: (reminder: Reminder) => void;
+  updateReminder: (id: string, changes: Partial<Reminder>) => void;
+  removeReminder: (id: string) => void;
   consumeFreeScan: () => void;
   /** Carga mascotas y escaneos descargados de la nube (reemplaza lo local). */
   loadFromCloud: (pets: Pet[], scans: ScanRecord[]) => void;
@@ -42,6 +51,8 @@ export const useAppStore = create<AppState>()(
       pets: [],
       activePetId: undefined,
       scans: [],
+      healthRecords: [],
+      reminders: [],
       freeScansUsed: 0,
 
       setOnboardingDone: () => set({ onboardingDone: true }),
@@ -60,8 +71,10 @@ export const useAppStore = create<AppState>()(
           const pets = s.pets.filter((p) => p.id !== id);
           return {
             pets,
-            // Sus escaneos se eliminan con ella; la activa pasa a la primera restante.
+            // Sus escaneos, historial y recordatorios se eliminan con ella.
             scans: s.scans.filter((scan) => scan.petId !== id),
+            healthRecords: s.healthRecords.filter((r) => r.petId !== id),
+            reminders: s.reminders.filter((r) => r.petId !== id),
             activePetId: s.activePetId === id ? pets[0]?.id : s.activePetId,
           };
         });
@@ -72,6 +85,20 @@ export const useAppStore = create<AppState>()(
         set((s) => ({ scans: [scan, ...s.scans] }));
         cloud.upsertScan(scan);
       },
+      addHealthRecord: (record) =>
+        set((s) => ({
+          healthRecords: [record, ...s.healthRecords].sort((a, b) => (a.date < b.date ? 1 : -1)),
+        })),
+      removeHealthRecord: (id) =>
+        set((s) => ({ healthRecords: s.healthRecords.filter((r) => r.id !== id) })),
+      addReminder: (reminder) =>
+        set((s) => ({
+          reminders: [...s.reminders, reminder].sort((a, b) => (a.dueDate > b.dueDate ? 1 : -1)),
+        })),
+      updateReminder: (id, changes) =>
+        set((s) => ({ reminders: s.reminders.map((r) => (r.id === id ? { ...r, ...changes } : r)) })),
+      removeReminder: (id) =>
+        set((s) => ({ reminders: s.reminders.filter((r) => r.id !== id) })),
       consumeFreeScan: () => set((s) => ({ freeScansUsed: s.freeScansUsed + 1 })),
       loadFromCloud: (pets, scans) =>
         set((s) => ({
@@ -85,6 +112,8 @@ export const useAppStore = create<AppState>()(
           pets: [],
           activePetId: undefined,
           scans: [],
+          healthRecords: [],
+          reminders: [],
           freeScansUsed: 0,
         }),
     }),

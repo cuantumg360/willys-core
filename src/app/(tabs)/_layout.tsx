@@ -24,6 +24,15 @@ export default function TabsLayout() {
         }}
       />
       <Tabs.Screen
+        name="salud"
+        options={{
+          title: t('tab.salud'),
+          tabBarIcon: ({ color, size }) => (
+            <Icon symbol="heart.fill" emoji="❤️" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
         name="historial"
         options={{
           title: t('history.title'),

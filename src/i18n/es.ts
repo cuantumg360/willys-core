@@ -145,6 +145,8 @@ export const es = {
   'scan.camera.openSettings': 'Abrir Ajustes',
 
   // ── Resultado ───────────────────────────────────────────────────────
+  'result.estimatedWeight': 'Peso estimado · ~{kg} kg',
+  'result.comparePct': 'Mejor que el {pct}% de perros similares',
   'result.details': 'Lo más relevante',
   'result.recommendations': 'Recomendaciones',
   'result.vetBanner': 'Hemos visto algo que conviene revisar. Te recomendamos consultarlo con tu veterinario cuanto antes.',
@@ -163,6 +165,73 @@ export const es = {
   'history.empty.bodyNoPet': 'Haz tu primer escaneo y aparecerá aquí.',
   'history.trend.title': 'Evolución de {name}',
   'history.trend.caption': 'Condición corporal (BCS) · la banda verde es el rango ideal',
+
+  // ── Salud (centro de salud) ─────────────────────────────────────────
+  'tab.salud': 'Salud',
+  'salud.title': 'Salud de {name}',
+  'salud.titleNoPet': 'Salud',
+  'salud.empty': 'Añade una mascota para ver su salud.',
+  'salud.alerts': 'Alertas',
+  'salud.noAlerts': 'Todo en orden, sin alertas. 🎉',
+  'salud.weight.title': 'Peso',
+  'salud.weight.current': 'Peso actual',
+  'salud.weight.none': 'Aún no hay registros de peso. Haz un escáner de peso o añádelo a mano.',
+  'salud.weight.add': 'Registrar peso',
+  'salud.weight.chartCaption': 'Evolución del peso (kg)',
+  'salud.compare.title': 'Comparativa',
+  'salud.compare.text': '{name} está mejor que el {pct}% de perros similares',
+  'salud.compare.note': 'Estimación orientativa según su condición corporal. Con el análisis real se comparará con miles de perros de su raza y edad.',
+  'salud.compare.none': 'Haz un escáner de peso para comparar a {name} con perros similares.',
+  'salud.reminders.title': 'Recordatorios',
+  'salud.reminders.add': 'Añadir recordatorio',
+  'salud.reminders.none': 'Sin recordatorios. Añade vacunas, desparasitación o comida.',
+  'salud.reminders.markDone': 'Marcar hecho',
+  'salud.history.title': 'Historial médico',
+  'salud.history.add': 'Añadir al historial',
+  'salud.history.none': 'Sin registros médicos todavía.',
+  'salud.report.title': 'Informe para el veterinario',
+  'salud.report.desc': 'Comparte un resumen de la salud de {name} con tu veterinario.',
+  'salud.report.cta': 'Compartir informe',
+
+  // Tipos de registro / recordatorio
+  'kind.peso': 'Peso',
+  'kind.vacuna': 'Vacuna',
+  'kind.desparasitacion': 'Desparasitación',
+  'kind.tratamiento': 'Tratamiento',
+  'kind.visita': 'Visita al veterinario',
+  'kind.nota': 'Nota',
+  'kind.alimentacion': 'Alimentación',
+  'kind.otro': 'Otro',
+
+  // Vencimiento de recordatorios
+  'due.overdue': 'Vencido',
+  'due.today': 'Hoy',
+  'due.oneDay': 'En 1 día',
+  'due.inDays': 'En {days} días',
+
+  // Fechas rápidas (sin selector nativo)
+  'date.label': 'Fecha',
+  'date.today': 'Hoy',
+  'date.yesterday': 'Ayer',
+  'date.weekAgo': 'Hace 1 semana',
+  'date.monthAgo': 'Hace 1 mes',
+  'date.inWeek': 'En 1 semana',
+  'date.inMonth': 'En 1 mes',
+  'date.in3Months': 'En 3 meses',
+  'date.in6Months': 'En 6 meses',
+  'date.inYear': 'En 1 año',
+
+  // Formulario de registro médico
+  'record.newTitle': 'Nuevo registro',
+  'record.kind': 'Tipo',
+  'record.titleLabel': 'Título',
+  'record.titlePlaceholder': 'Ej.: Vacuna antirrábica',
+  'record.notes': 'Notas ({optional})',
+  'record.weight': 'Peso en kg',
+
+  // Formulario de recordatorio
+  'reminder.newTitle': 'Nuevo recordatorio',
+  'reminder.titlePlaceholder': 'Ej.: Vacuna anual',
 
   // ── Ajustes ─────────────────────────────────────────────────────────
   'settings.title': 'Ajustes',

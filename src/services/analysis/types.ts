@@ -32,6 +32,8 @@ export interface AnalysisResult {
   recomendaciones: string[];
   confianza: Confianza;
   requiere_veterinario: boolean;
+  /** Peso estimado en kg (solo escáner de condición corporal). */
+  peso_estimado_kg?: number;
 }
 
 /** Lo que la app envía al motor de análisis. */
@@ -91,6 +93,11 @@ export function validateAnalysisResult(raw: unknown): AnalysisResult {
     .filter((x): x is string => typeof x === 'string')
     .slice(0, 3);
 
+  const peso_estimado_kg =
+    typeof r.peso_estimado_kg === 'number' && Number.isFinite(r.peso_estimado_kg)
+      ? r.peso_estimado_kg
+      : undefined;
+
   return {
     tipo,
     puntuacion,
@@ -101,5 +108,6 @@ export function validateAnalysisResult(raw: unknown): AnalysisResult {
     recomendaciones,
     confianza: r.confianza as Confianza,
     requiere_veterinario: r.requiere_veterinario,
+    peso_estimado_kg,
   };
 }

@@ -12,6 +12,7 @@ import { usePurchases } from '@/services/purchases';
 import { freeScansLeft, useAppStore, usePrimaryPet } from '@/store/useAppStore';
 import { bcsColor, colors, radius, scoreColor, shadow, spacing, type } from '@/theme';
 import { formatScanDate } from '@/utils/dates';
+import { deriveAlerts } from '@/utils/health';
 
 /** Color del contenedor del icono de cada escáner (solo presentación). */
 const ICON_TINT: Record<string, string> = {
@@ -23,8 +24,11 @@ export default function Home() {
   const pet = usePrimaryPet();
   const premium = usePurchases((s) => s.premium);
   const freeScansUsed = useAppStore((s) => s.freeScansUsed);
-  const lastScan = useAppStore((s) => s.scans[0]);
+  const scans = useAppStore((s) => s.scans);
+  const reminders = useAppStore((s) => s.reminders);
+  const lastScan = scans[0];
 
+  const alerts = deriveAlerts(pet, scans, reminders);
   const canScan = premium || freeScansLeft(freeScansUsed) > 0;
 
   const openScanner = (scanner: ScannerConfig) => {
@@ -54,6 +58,19 @@ export default function Home() {
       <FadeIn delay={90} style={{ marginTop: spacing.md }}>
         <ScanCounter />
       </FadeIn>
+
+      {alerts.length > 0 && (
+        <FadeIn delay={120}>
+          <PressableScale style={styles.alertBanner} onPress={() => router.push('/salud')}>
+            <Text style={styles.alertEmoji}>⚠️</Text>
+            <Text style={[type.small, { flex: 1, fontWeight: '600', color: colors.text }]}>
+              {alerts[0].text}
+              {alerts.length > 1 ? ` (+${alerts.length - 1})` : ''}
+            </Text>
+            <Text style={styles.chevron}>›</Text>
+          </PressableScale>
+        </FadeIn>
+      )}
 
       <Text style={[styles.sectionLabel, styles.section]}>{t('home.scanners')}</Text>
       <View style={{ gap: spacing.md }}>
@@ -113,6 +130,17 @@ export default function Home() {
 
 const styles = StyleSheet.create({
   header: { flexDirection: 'row', alignItems: 'center', gap: spacing.md },
+  alertBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    backgroundColor: colors.warnSoft,
+    borderRadius: radius.md,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    marginTop: spacing.md,
+  },
+  alertEmoji: { fontSize: 18 },
   eyebrow: { ...type.small, fontWeight: '600', color: colors.textMuted },
   greeting: { fontSize: 23, fontWeight: '800', lineHeight: 28, color: colors.text },
   sectionLabel: { ...type.heading, letterSpacing: 0.2 },

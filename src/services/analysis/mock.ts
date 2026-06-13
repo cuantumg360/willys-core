@@ -23,6 +23,7 @@ const BCS_RESULTS: Omit<AnalysisResult, 'tipo'>[] = [
     ],
     confianza: 'alta',
     requiere_veterinario: false,
+    peso_estimado_kg: 12.4,
   },
   {
     puntuacion: 7,
@@ -42,6 +43,7 @@ const BCS_RESULTS: Omit<AnalysisResult, 'tipo'>[] = [
     ],
     confianza: 'alta',
     requiere_veterinario: false,
+    peso_estimado_kg: 16.1,
   },
   {
     puntuacion: 8,
@@ -59,6 +61,7 @@ const BCS_RESULTS: Omit<AnalysisResult, 'tipo'>[] = [
     ],
     confianza: 'alta',
     requiere_veterinario: true,
+    peso_estimado_kg: 21.7,
   },
 ];
 

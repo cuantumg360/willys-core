@@ -86,6 +86,21 @@ export default function Analyzing() {
         result,
       };
       addScan(scan);
+
+      // Registro automático de peso: cada BCS con peso estimado crea una
+      // entrada en el historial y actualiza el peso de la mascota.
+      if (pet && result.tipo === 'condicion_corporal' && result.peso_estimado_kg) {
+        useAppStore.getState().addHealthRecord({
+          id: newId(),
+          petId: pet.id,
+          kind: 'peso',
+          title: 'Peso estimado por foto',
+          date: scan.createdAt,
+          weightKg: result.peso_estimado_kg,
+        });
+        useAppStore.getState().updatePet(pet.id, { pesoKg: result.peso_estimado_kg });
+      }
+
       if (!premium) consumeFreeScan();
       track('escaneo_completado', { scanner: scanner.id, confianza: result.confianza });
       usePendingScan.getState().reset();

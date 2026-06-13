@@ -19,3 +19,39 @@ export interface ScanRecord {
   photoUris: string[];
   result: AnalysisResult;
 }
+
+/** Tipos de evento del historial médico. */
+export type HealthRecordKind =
+  | 'peso'
+  | 'vacuna'
+  | 'desparasitacion'
+  | 'tratamiento'
+  | 'visita'
+  | 'nota';
+
+export interface HealthRecord {
+  id: string;
+  petId: string;
+  kind: HealthRecordKind;
+  /** Título corto del evento (p. ej. "Vacuna polivalente"). */
+  title: string;
+  /** Fecha del evento, ISO 8601. */
+  date: string;
+  notes?: string;
+  /** Solo para kind 'peso'. */
+  weightKg?: number;
+}
+
+/** Tipos de recordatorio de cuidado. */
+export type ReminderKind = 'vacuna' | 'desparasitacion' | 'alimentacion' | 'otro';
+
+export interface Reminder {
+  id: string;
+  petId: string;
+  kind: ReminderKind;
+  title: string;
+  /** Fecha de vencimiento, ISO 8601. */
+  dueDate: string;
+  done: boolean;
+}
+

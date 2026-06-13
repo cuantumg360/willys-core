@@ -18,6 +18,7 @@ import { track } from '@/services/analytics';
 import { usePendingScan } from '@/store/usePendingScan';
 import { useAppStore, usePrimaryPet } from '@/store/useAppStore';
 import { bcsColor, colors, radius, scoreColor, shadow, spacing, type } from '@/theme';
+import { bcsPercentile } from '@/utils/health';
 
 /**
  * Pantalla de resultado. scanId === "ultimo" muestra el análisis
@@ -111,6 +112,16 @@ export default function Result() {
           <ScoreBar value={result.puntuacion} categoria={result.categoria} />
         )}
         <Text style={[type.small, { textAlign: 'center' }]}>{t(scanner.scaleLabelKey)}</Text>
+        {result.tipo === 'condicion_corporal' && result.peso_estimado_kg ? (
+          <View style={styles.insights}>
+            <Text style={styles.insight}>
+              {t('result.estimatedWeight', { kg: result.peso_estimado_kg })}
+            </Text>
+            <Text style={styles.insight}>
+              {t('result.comparePct', { pct: bcsPercentile(result.puntuacion) })}
+            </Text>
+          </View>
+        ) : null}
       </FadeIn>
 
       <View style={{ gap: spacing.lg, marginTop: spacing.lg }}>
@@ -175,6 +186,23 @@ const styles = StyleSheet.create({
     gap: spacing.md,
     marginTop: spacing.md,
     ...shadow.card,
+  },
+  insights: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+    gap: spacing.sm,
+    marginTop: spacing.xs,
+  },
+  insight: {
+    ...type.small,
+    fontWeight: '600',
+    color: colors.primaryDark,
+    backgroundColor: colors.primarySoft,
+    borderRadius: radius.pill,
+    paddingHorizontal: spacing.md,
+    paddingVertical: 4,
+    overflow: 'hidden',
   },
   reco: { flexDirection: 'row', gap: spacing.sm },
   recoBullet: { color: colors.primary, fontWeight: '800', fontSize: 17 },

@@ -30,6 +30,8 @@ export default function RootLayout() {
             en el onboarding. Se cierra con la X (tras 2 s) o comprando. */}
         <Stack.Screen name="paywall" options={{ gestureEnabled: false }} />
         <Stack.Screen name="mascota" options={{ presentation: 'modal' }} />
+        <Stack.Screen name="registro" options={{ presentation: 'modal' }} />
+        <Stack.Screen name="recordatorio" options={{ presentation: 'modal' }} />
         <Stack.Screen
           name="mascotas"
           options={{
