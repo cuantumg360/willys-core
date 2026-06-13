@@ -1,16 +1,18 @@
 import { useEffect, useRef, useState } from 'react';
 import { Animated, Easing, StyleSheet, Text, View } from 'react-native';
-import Svg, { Circle, Line, Path } from 'react-native-svg';
+import Svg, { Circle, Path } from 'react-native-svg';
 
 import { bcsColor, colors, type } from '@/theme';
 
-const W = 280;
-const H = 160;
+const W = 260;
+const H = 150;
 const CX = W / 2;
-const CY = H - 14;
-const R = 116;
-const STROKE = 22;
+const CY = H - 6;
+const R = 106;
+const STROKE = 16;
 const REVEAL_MS = 1100;
+/** Hueco (en unidades BCS) entre tramos, para que se lean separados. */
+const GAP = 0.12;
 
 // Tramos del semáforo en la escala BCS 1-9 (4-5 = ideal).
 const SEGMENTS: { from: number; to: number; color: string }[] = [
@@ -38,8 +40,9 @@ function arcPath(fromAngle: number, toAngle: number): string {
 }
 
 /**
- * Gauge semicircular tipo semáforo para la escala BCS 1-9. Al aparecer, la
- * aguja barre desde el mínimo hasta el valor y el número cuenta a la par.
+ * Medidor semicircular tipo semáforo para la escala BCS 1-9. El número
+ * vive limpio en el centro del hueco y un marcador se desliza por el arco
+ * hasta el valor (sin aguja, para que nada se solape).
  */
 export function Gauge({ value, categoria }: { value: number; categoria: string }) {
   const anim = useRef(new Animated.Value(1)).current;
@@ -57,35 +60,44 @@ export function Gauge({ value, categoria }: { value: number; categoria: string }
     return () => anim.removeListener(id);
   }, [value, anim]);
 
-  const needleAngle = angleFor(display, 1, 9);
-  const tip = point(needleAngle, R - STROKE / 2 - 8);
   const valueColor = bcsColor(value);
+  const marker = point(angleFor(display, 1, 9), R);
   const shown = Number.isInteger(value) ? String(Math.round(display)) : display.toFixed(1);
 
   return (
     <View style={styles.wrap}>
-      <Svg width={W} height={H}>
-        {SEGMENTS.map((seg) => (
-          <Path
-            key={`${seg.from}`}
-            d={arcPath(angleFor(seg.from, 1, 9), angleFor(seg.to, 1, 9))}
-            stroke={seg.color}
-            strokeWidth={STROKE}
-            strokeLinecap="butt"
-            fill="none"
-          />
-        ))}
-        <Line x1={CX} y1={CY} x2={tip.x} y2={tip.y} stroke={colors.text} strokeWidth={4} strokeLinecap="round" />
-        <Circle cx={CX} cy={CY} r={8} fill={colors.text} />
-      </Svg>
-      <Text style={[styles.value, { color: valueColor }]}>{shown}</Text>
+      <View style={{ width: W, height: H }}>
+        <Svg width={W} height={H}>
+          {SEGMENTS.map((seg) => (
+            <Path
+              key={`${seg.from}`}
+              d={arcPath(angleFor(seg.from + GAP, 1, 9), angleFor(seg.to - GAP, 1, 9))}
+              stroke={seg.color}
+              strokeWidth={STROKE}
+              strokeLinecap="round"
+              fill="none"
+            />
+          ))}
+          {/* Marcador del valor sobre el arco */}
+          <Circle cx={marker.x} cy={marker.y} r={13} fill={colors.surface} />
+          <Circle cx={marker.x} cy={marker.y} r={9} fill={valueColor} />
+        </Svg>
+
+        <View style={styles.center}>
+          <Text style={[styles.value, { color: valueColor }]}>{shown}</Text>
+          <Text style={styles.outOf}>de 9</Text>
+        </View>
+      </View>
+
       <Text style={[styles.categoria, { color: valueColor }]}>{categoria}</Text>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  wrap: { alignItems: 'center' },
-  value: { fontSize: 44, fontWeight: '800', marginTop: -52 },
-  categoria: { ...type.heading, marginTop: 2 },
+  wrap: { alignItems: 'center', gap: 4 },
+  center: { position: 'absolute', left: 0, right: 0, top: 58, alignItems: 'center' },
+  value: { fontSize: 52, fontWeight: '800', lineHeight: 54 },
+  outOf: { fontSize: 13, fontWeight: '600', color: colors.textMuted, marginTop: 2 },
+  categoria: { ...type.heading, fontSize: 20 },
 });

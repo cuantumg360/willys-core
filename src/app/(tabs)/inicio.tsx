@@ -10,8 +10,14 @@ import { listScanners, ScannerConfig } from '@/features/scanners/registry';
 import { t } from '@/i18n';
 import { usePurchases } from '@/services/purchases';
 import { freeScansLeft, useAppStore, usePrimaryPet } from '@/store/useAppStore';
-import { bcsColor, colors, radius, scoreColor, spacing, type } from '@/theme';
+import { bcsColor, colors, radius, scoreColor, shadow, spacing, type } from '@/theme';
 import { formatScanDate } from '@/utils/dates';
+
+/** Color del contenedor del icono de cada escáner (solo presentación). */
+const ICON_TINT: Record<string, string> = {
+  condicion_corporal: colors.primarySoft,
+  etiqueta: colors.warnSoft,
+};
 
 export default function Home() {
   const pet = usePrimaryPet();
@@ -32,29 +38,38 @@ export default function Home() {
   return (
     <Screen>
       <FadeIn style={styles.header} offsetY={8}>
-        <PetAvatar uri={pet?.fotoUri} size={52} />
-        <View style={{ flex: 1 }}>
-          <Text style={type.title}>
-            {pet?.nombre ? t('home.greeting', { name: pet.nombre }) : t('home.greetingNoPet')}
+        <PetAvatar uri={pet?.fotoUri} size={56} />
+        <View style={{ flex: 1, gap: 3 }}>
+          <Text style={styles.eyebrow}>{t('home.greetingEyebrow')}</Text>
+          <Text style={styles.greeting}>
+            {pet?.nombre
+              ? t('home.greetingPet', { name: pet.nombre })
+              : t('home.greetingNoPetTitle')}
           </Text>
         </View>
       </FadeIn>
 
-      <FadeIn delay={90}>
+      <FadeIn delay={90} style={{ marginTop: spacing.md }}>
         <ScanCounter />
       </FadeIn>
 
-      <Text style={[type.heading, styles.section]}>{t('home.scanners')}</Text>
+      <Text style={[styles.sectionLabel, styles.section]}>{t('home.scanners')}</Text>
       <View style={{ gap: spacing.md }}>
         {listScanners().map((scanner, index) => (
           <FadeIn key={scanner.id} delay={160 + index * 90}>
             <PressableScale style={styles.card} onPress={() => openScanner(scanner)}>
-              <Text style={styles.cardEmoji}>{scanner.emoji}</Text>
-              <View style={{ flex: 1, gap: 2 }}>
-                <Text style={type.heading}>{t(scanner.titleKey)}</Text>
-                <Text style={type.bodyMuted}>{t(scanner.subtitleKey)}</Text>
+              <View
+                style={[styles.cardIcon, { backgroundColor: ICON_TINT[scanner.id] ?? colors.primarySoft }]}
+              >
+                <Text style={styles.cardEmoji}>{scanner.emoji}</Text>
               </View>
-              <Text style={styles.chevron}>›</Text>
+              <View style={{ flex: 1, gap: 3 }}>
+                <Text style={type.heading}>{t(scanner.titleKey)}</Text>
+                <Text style={type.small}>{t(scanner.subtitleKey)}</Text>
+              </View>
+              <View style={styles.chevronCircle}>
+                <Text style={styles.chevron}>›</Text>
+              </View>
             </PressableScale>
           </FadeIn>
         ))}
@@ -62,7 +77,7 @@ export default function Home() {
 
       {lastScan && (
         <FadeIn delay={160 + listScanners().length * 90}>
-          <Text style={[type.heading, styles.section]}>{t('home.lastScan')}</Text>
+          <Text style={[styles.sectionLabel, styles.section]}>{t('home.lastScan')}</Text>
           <PressableScale
             style={styles.lastScan}
             onPress={() => router.push(`/resultado/${lastScan.id}`)}
@@ -84,7 +99,9 @@ export default function Home() {
               <Text style={[type.body, { fontWeight: '700' }]}>{lastScan.result.categoria}</Text>
               <Text style={type.small}>{formatScanDate(lastScan.createdAt)}</Text>
             </View>
-            <Text style={styles.chevron}>›</Text>
+            <View style={styles.chevronCircle}>
+              <Text style={styles.chevron}>›</Text>
+            </View>
           </PressableScale>
         </FadeIn>
       )}
@@ -94,28 +111,44 @@ export default function Home() {
 
 const styles = StyleSheet.create({
   header: { flexDirection: 'row', alignItems: 'center', gap: spacing.md },
+  eyebrow: { ...type.small, fontWeight: '600', color: colors.textMuted },
+  greeting: { fontSize: 23, fontWeight: '800', lineHeight: 28, color: colors.text },
+  sectionLabel: { ...type.heading, letterSpacing: 0.2 },
   section: { marginTop: spacing.xl, marginBottom: spacing.md },
   card: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.md,
     backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.border,
     borderRadius: radius.lg,
-    padding: spacing.lg,
+    padding: spacing.md,
+    ...shadow.card,
   },
-  cardEmoji: { fontSize: 40 },
-  chevron: { fontSize: 28, color: colors.textMuted },
+  cardIcon: {
+    width: 56,
+    height: 56,
+    borderRadius: 18,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  cardEmoji: { fontSize: 30 },
+  chevronCircle: {
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    backgroundColor: colors.surfaceMuted,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  chevron: { fontSize: 20, fontWeight: '700', color: colors.textMuted, marginTop: -2 },
   lastScan: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.md,
     backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.border,
     borderRadius: radius.lg,
     padding: spacing.md,
+    ...shadow.card,
   },
   lastScore: {
     width: 48,

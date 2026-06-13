@@ -17,7 +17,7 @@ import { t } from '@/i18n';
 import { track } from '@/services/analytics';
 import { usePendingScan } from '@/store/usePendingScan';
 import { useAppStore, usePrimaryPet } from '@/store/useAppStore';
-import { bcsColor, colors, radius, scoreColor, spacing, type } from '@/theme';
+import { bcsColor, colors, radius, scoreColor, shadow, spacing, type } from '@/theme';
 
 /**
  * Pantalla de resultado. scanId === "ultimo" muestra el análisis
@@ -169,13 +169,12 @@ export default function Result() {
 const styles = StyleSheet.create({
   scoreCard: {
     backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.border,
     borderRadius: radius.lg,
     padding: spacing.lg,
     alignItems: 'center',
     gap: spacing.md,
     marginTop: spacing.md,
+    ...shadow.card,
   },
   reco: { flexDirection: 'row', gap: spacing.sm },
   recoBullet: { color: colors.primary, fontWeight: '800', fontSize: 17 },

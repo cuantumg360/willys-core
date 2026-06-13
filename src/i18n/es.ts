@@ -71,11 +71,14 @@ export const es = {
   // ── Inicio ───────────────────────────────────────────────────────────
   'home.greeting': 'Hola 👋 ¿Cómo está {name} hoy?',
   'home.greetingNoPet': 'Hola 👋',
+  'home.greetingEyebrow': 'Hola 👋',
+  'home.greetingPet': '¿Cómo está {name}?',
+  'home.greetingNoPetTitle': '¿Cómo está tu perro?',
   'home.scanners': 'Escáneres',
   'home.scansLeft.many': 'Te quedan {count} escaneos gratis',
   'home.scansLeft.one': 'Te queda 1 escaneo gratis',
   'home.scansLeft.none': 'Has usado tus escaneos gratis',
-  'home.premium': 'Premium · escaneos ilimitados',
+  'home.premium': 'Premium',
   'home.lastScan': 'Último escaneo',
 
   // ── Escáner: condición corporal ─────────────────────────────────────

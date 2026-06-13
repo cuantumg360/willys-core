@@ -6,15 +6,15 @@ import { usePurchases } from '@/services/purchases';
 import { freeScansLeft, useAppStore } from '@/store/useAppStore';
 import { colors, radius, spacing, type } from '@/theme';
 
-/** Contador visible de escaneos gratis (o badge premium). */
+/** Contador de escaneos gratis (o chip premium compacto). */
 export function ScanCounter() {
   const premium = usePurchases((s) => s.premium);
   const used = useAppStore((s) => s.freeScansUsed);
 
   if (premium) {
     return (
-      <View style={[styles.pill, styles.premium]}>
-        <Text style={[styles.text, { color: colors.primaryDark }]}>{t('home.premium')}</Text>
+      <View style={styles.premium}>
+        <Text style={styles.premiumText}>✨ {t('home.premium')}</Text>
       </View>
     );
   }
@@ -50,11 +50,19 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
   },
-  premium: { backgroundColor: colors.primarySoft },
   empty: { backgroundColor: colors.badSoft },
   dots: { flexDirection: 'row', gap: 4 },
   dot: { width: 8, height: 8, borderRadius: 4 },
   dotOn: { backgroundColor: colors.primary },
   dotOff: { backgroundColor: colors.border },
   text: { ...type.small, fontWeight: '600', color: colors.text },
+  // Chip premium: pequeño y sutil
+  premium: {
+    alignSelf: 'flex-start',
+    backgroundColor: colors.primarySoft,
+    borderRadius: radius.pill,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+  },
+  premiumText: { fontSize: 12, fontWeight: '700', color: colors.primaryDark, letterSpacing: 0.2 },
 });

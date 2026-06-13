@@ -1,4 +1,4 @@
-import { TextStyle } from 'react-native';
+import { Platform, TextStyle, ViewStyle } from 'react-native';
 
 /**
  * Tema único (sin dark mode en el MVP). Estilo cálido y confiable,
@@ -47,6 +47,30 @@ export const radius = {
   lg: 24,
   pill: 999,
 } as const;
+
+/** Sombras suaves para dar profundidad premium a las tarjetas (iOS). */
+export const shadow: Record<'card' | 'soft', ViewStyle> = {
+  card:
+    Platform.select({
+      ios: {
+        shadowColor: '#1A1712',
+        shadowOpacity: 0.08,
+        shadowRadius: 18,
+        shadowOffset: { width: 0, height: 8 },
+      },
+      default: { elevation: 3 },
+    }) ?? {},
+  soft:
+    Platform.select({
+      ios: {
+        shadowColor: '#1A1712',
+        shadowOpacity: 0.05,
+        shadowRadius: 10,
+        shadowOffset: { width: 0, height: 4 },
+      },
+      default: { elevation: 2 },
+    }) ?? {},
+};
 
 /**
  * Una sola fuente: la del sistema con pesos marcados.
