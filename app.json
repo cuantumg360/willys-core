@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "Willy",
+    "name": "Guau",
     "slug": "willys-core",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "willy",
+    "scheme": "guau",
     "userInterfaceStyle": "light",
     "primaryColor": "#1FA47C",
     "ios": {

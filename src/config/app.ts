@@ -2,7 +2,7 @@
  * Identidad de la app. El nombre es PROVISIONAL: cámbialo aquí y se
  * actualiza en toda la app (el copy usa siempre esta constante).
  */
-export const APP_NAME = 'Willy';
+export const APP_NAME = 'Guau';
 
 export const APP_VERSION = '1.0.0';
 

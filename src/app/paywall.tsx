@@ -41,6 +41,9 @@ export default function Paywall() {
     if (context === 'onboarding') {
       setOnboardingDone();
       track('onboarding_completado');
+      // Limpia el historial del onboarding para que la app no vuelva a sus
+      // pantallas (cámara, etc.) al regresar de un resultado.
+      if (router.canDismiss()) router.dismissAll();
       router.replace('/inicio');
     } else {
       router.back();
@@ -100,6 +103,7 @@ export default function Paywall() {
           price={t('paywall.plan.annualPrice')}
           note={t('paywall.plan.annualTrial')}
           badge={t('paywall.plan.annualBadge')}
+          emphasize
         />
         <PlanOption
           selected={plan === 'weekly'}
@@ -155,6 +159,7 @@ function PlanOption({
   price,
   note,
   badge,
+  emphasize,
 }: {
   selected: boolean;
   onPress: () => void;
@@ -162,6 +167,7 @@ function PlanOption({
   price: string;
   note?: string;
   badge?: string;
+  emphasize?: boolean;
 }) {
   return (
     <Pressable onPress={onPress} style={[styles.plan, selected && styles.planSelected]}>
@@ -176,7 +182,12 @@ function PlanOption({
         </View>
         {note ? <Text style={[type.small, { color: colors.primaryDark }]}>{note}</Text> : null}
       </View>
-      <Text style={[type.heading, { color: selected ? colors.primaryDark : colors.textMuted }]}>
+      <Text
+        style={[
+          emphasize ? styles.planPriceBig : type.heading,
+          { color: selected ? colors.primaryDark : colors.textMuted },
+        ]}
+      >
         {price}
       </Text>
     </Pressable>
@@ -203,6 +214,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   closeText: { fontSize: 14, color: colors.textMuted, fontWeight: '700' },
+  planPriceBig: { fontSize: 22, fontWeight: '800', color: colors.text },
   top: { alignItems: 'center', gap: spacing.lg, marginTop: spacing.xl },
   emoji: { fontSize: 52 },
   bullets: { gap: spacing.sm, width: '100%' },

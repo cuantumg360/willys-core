@@ -4,6 +4,7 @@ import { KeyboardAvoidingView, Platform, Pressable, StyleSheet, Text, View } fro
 
 import { FadeIn } from '@/components/anim/FadeIn';
 import { Pop } from '@/components/anim/Pop';
+import { Logo } from '@/components/Logo';
 import { Button } from '@/components/ui/Button';
 import { Field } from '@/components/ui/Field';
 import { ProgressBar } from '@/components/ui/ProgressBar';
@@ -53,8 +54,8 @@ export default function Auth() {
       <Screen>
         {fromOnboarding && <ProgressBar step={5} total={5} />}
         <View style={styles.hero}>
-          <Pop style={styles.logo}>
-            <Text style={styles.logoEmoji}>🐾</Text>
+          <Pop>
+            <Logo size={96} withBackground />
           </Pop>
           <FadeIn delay={120} style={{ gap: spacing.sm, alignItems: 'center' }}>
             <Text style={[type.title, { textAlign: 'center' }]}>
@@ -116,16 +117,6 @@ export default function Auth() {
 
 const styles = StyleSheet.create({
   hero: { alignItems: 'center', gap: spacing.lg, marginTop: spacing.xl, marginBottom: spacing.xl },
-  logo: {
-    width: 96,
-    height: 96,
-    borderRadius: 48,
-    backgroundColor: colors.primarySoft,
-    alignItems: 'center',
-    justifyContent: 'center',
-    ...shadow.soft,
-  },
-  logoEmoji: { fontSize: 48 },
   card: {
     backgroundColor: colors.surface,
     borderRadius: radius.lg,

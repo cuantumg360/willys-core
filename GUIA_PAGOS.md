@@ -17,11 +17,12 @@ nube con EAS, sin Mac). Sigue estos pasos en orden.
    `com.willyapp.willy`, el de `app.json`).
 2. Ve a **Suscripciones** y crea un **grupo de suscripción** (p. ej. "Willy Premium").
 3. Crea los productos dentro del grupo:
-   - **Semanal** — 4,99 € — id de producto: `willy_weekly`
-   - **Anual** — 29,99 € — id: `willy_annual` — añade una **oferta
-     introductoria** de **3 días gratis** (free trial).
+   - **Semanal** — 4,99 € — id de producto: `guau_weekly`
+   - **Anual** — 39,99 € — id: `guau_annual` — añade una **oferta
+     introductoria** de **3 días gratis** (free trial). (En el paywall se
+     muestra como "0,77 €/semana" para que se perciba más barato.)
    - **Lifetime fundador** — compra única (no suscripción) 24,99 € — id:
-     `willy_lifetime` (créalo como *Non-Consumable* en "Compras dentro de la app").
+     `guau_lifetime` (créalo como *Non-Consumable* en "Compras dentro de la app").
 4. Rellena precios por país (Apple ofrece tiers regionalizados automáticos
    para LatAm) y los metadatos mínimos. Disponibilidad: todos los países
    hispanohablantes.
@@ -31,8 +32,8 @@ nube con EAS, sin Mac). Sigue estos pasos en orden.
 1. Crea un proyecto y añade tu app de **App Store** (te pedirá el bundle id
    y una *App-Specific Shared Secret* de App Store Connect).
 2. En **Entitlements**, crea uno con identificador exactamente **`premium`**.
-3. En **Products**, importa/añade los tres productos (`willy_weekly`,
-   `willy_annual`, `willy_lifetime`) y **adjúntalos al entitlement `premium`**.
+3. En **Products**, importa/añade los tres productos (`guau_weekly`,
+   `guau_annual`, `guau_lifetime`) y **adjúntalos al entitlement `premium`**.
 4. En **Offerings**, crea la oferta `default` con tres **packages** cuyos
    identificadores sean **`weekly`**, **`annual`** y **`lifetime`** (la app
    busca esos nombres; ver `src/services/purchases/types.ts`).
