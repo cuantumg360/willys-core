@@ -21,3 +21,11 @@ export const SUPABASE_ANON_KEY = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY ?? ''
 
 /** ¿Hay backend de auth real configurado? Si no, se usa el mock. */
 export const hasSupabase = Boolean(SUPABASE_URL && SUPABASE_ANON_KEY);
+
+/**
+ * API keys públicas de RevenueCat (una por plataforma). Solo se usan si el
+ * flag `useRealPurchases` está activo (en un development build, no en Expo
+ * Go). Son claves de cliente, no secretas.
+ */
+export const REVENUECAT_IOS_KEY = process.env.EXPO_PUBLIC_REVENUECAT_IOS_KEY ?? '';
+export const REVENUECAT_ANDROID_KEY = process.env.EXPO_PUBLIC_REVENUECAT_ANDROID_KEY ?? '';

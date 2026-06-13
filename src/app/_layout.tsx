@@ -3,14 +3,16 @@ import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 
 import { track } from '@/services/analytics';
+import { usePurchases } from '@/services/purchases';
 import { useAuth } from '@/store/useAuth';
 import { colors } from '@/theme';
 
 export default function RootLayout() {
   useEffect(() => {
     track('app_abierta');
-    // Carga la sesión guardada (login) al arrancar.
+    // Carga la sesión (login) y el estado premium (compras) al arrancar.
     useAuth.getState().init();
+    usePurchases.getState().init();
   }, []);
 
   return (

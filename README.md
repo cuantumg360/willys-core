@@ -18,7 +18,7 @@ gratis en total).
 |---|---|---|
 | 1 | Estructura, pantallas, mock, gating freemium | ✅ Hecha |
 | 2 | Backend (Edge Function/Worker) + IA de visión real | ⬜ `backend/README.md` |
-| 3 | RevenueCat real (3 productos) + PostHog | ⬜ Interfaz lista en `src/services/purchases` |
+| 3 | RevenueCat (3 productos) + cuentas + sync | ✅ Integrado (mock ↔ real por flag; ver `GUIA_PAGOS.md`) |
 | 4 | EAS Build/Submit a App Store Connect | ⬜ `eas.json` listo, faltan IDs |
 
 ## Ejecutar en desarrollo
@@ -65,8 +65,9 @@ Decisiones clave:
 - **La API key de IA nunca va en el cliente**: `services/analysis/api.ts`
   llama a un backend propio (contrato en `backend/README.md`).
 - **Gating por entitlement**: la app solo conoce `premium: boolean` de
-  `services/purchases`; en fase 3 se enchufa `react-native-purchases` sin
-  tocar pantallas.
+  `services/purchases`; usa el mock en Expo Go y RevenueCat real al activar
+  `flags.useRealPurchases` + la API key (development build). Sin tocar
+  pantallas. Pasos en `GUIA_PAGOS.md`.
 - **Confianza "baja"** (foto no válida): se pide repetir la foto, no se
   guarda en historial ni consume escaneo gratis.
 - **Cuentas con login**: `services/auth` usa un mock local en desarrollo y

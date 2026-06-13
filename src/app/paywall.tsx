@@ -55,8 +55,10 @@ export default function Paywall() {
   const buy = async () => {
     setBuying(true);
     try {
-      await purchase(plan);
-      finish();
+      // Solo avanzamos si la compra se completa (con RevenueCat el usuario
+      // puede cancelar el diálogo; en el mock siempre concede premium).
+      const ok = await purchase(plan);
+      if (ok) finish();
     } finally {
       setBuying(false);
     }
