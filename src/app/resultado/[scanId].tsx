@@ -115,7 +115,9 @@ export default function Result() {
         {result.tipo === 'condicion_corporal' && result.peso_estimado_kg ? (
           <View style={styles.insights}>
             <Text style={styles.insight}>
-              {t('result.estimatedWeight', { kg: result.peso_estimado_kg })}
+              {pet?.pesoKg === result.peso_estimado_kg
+                ? t('result.knownWeight', { kg: result.peso_estimado_kg })
+                : t('result.estimatedWeight', { kg: result.peso_estimado_kg })}
             </Text>
             <Text style={styles.insight}>
               {t('result.comparePct', { pct: bcsPercentile(result.puntuacion) })}

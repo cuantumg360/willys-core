@@ -136,7 +136,7 @@ export const es = {
   // ── Flujo de escaneo común ──────────────────────────────────────────
   'scan.intro.cta': 'Hacer foto',
   'scan.intro.optionalData': 'Datos opcionales (mejoran el análisis)',
-  'scan.intro.weightLabel': 'Peso conocido en kg ({optional})',
+  'scan.intro.weightLabel': 'Peso real en kg · indícalo para un dato exacto',
   'scan.intro.weightPlaceholder': 'Ej.: 12,5',
   'scan.camera.stepCount': 'Foto {n} de {total}',
   'scan.camera.gallery': 'Galería',
@@ -145,7 +145,8 @@ export const es = {
   'scan.camera.openSettings': 'Abrir Ajustes',
 
   // ── Resultado ───────────────────────────────────────────────────────
-  'result.estimatedWeight': 'Peso estimado · ~{kg} kg',
+  'result.estimatedWeight': 'Peso estimado · ~{kg} kg (orientativo)',
+  'result.knownWeight': 'Peso · {kg} kg',
   'result.comparePct': 'Mejor que el {pct}% de perros similares',
   'result.details': 'Lo más relevante',
   'result.recommendations': 'Recomendaciones',

@@ -51,11 +51,50 @@ Pendiente (siguiente refinamiento):
   hay que subirlas a **Supabase Storage** al elegirlas y guardar su URL
   pública en lugar de la ruta local.
 
-# Backend de análisis de imágenes (Fase 2 — aún no implementado)
+# Backend de análisis de imágenes (IA de visión real)
 
-Servicio ligero (Supabase Edge Function o Cloudflare Worker) que hace de
-proxy entre la app y el modelo de visión. **La API key del modelo vive
-solo aquí, nunca en el cliente.**
+Ya implementado como **Supabase Edge Function** en
+`backend/supabase/functions/analyze/index.ts`. Hace de proxy entre la app y
+**Claude Opus 4.8 con visión** (Anthropic). **La API key del modelo vive solo
+aquí, nunca en el cliente**, y la salida es JSON garantizado por esquema
+("structured outputs").
+
+## Desplegar (una vez)
+
+1. Instala la CLI de Supabase y enlaza tu proyecto:
+   ```bash
+   npm install -g supabase
+   supabase login
+   supabase link --project-ref TU_PROJECT_REF
+   ```
+2. Guarda la API key de Anthropic como secreto del servidor (NO en la app):
+   ```bash
+   supabase secrets set ANTHROPIC_API_KEY=sk-ant-...
+   ```
+3. Despliega la función:
+   ```bash
+   supabase functions deploy analyze --no-verify-jwt
+   ```
+4. En la app, en `.env`, apunta al backend (el cliente añade `/analyze`):
+   ```
+   EXPO_PUBLIC_BACKEND_URL=https://TU_PROJECT_REF.supabase.co/functions/v1
+   ```
+5. Activa el flag en `src/config/flags.ts`:
+   ```ts
+   useRealAnalysis: true,
+   ```
+   (Con el flag activo y la URL presente, la app usa el backend real; si falta
+   cualquiera de los dos, sigue con el mock — Expo Go sigue funcionando.)
+
+## Sobre el peso
+
+Estimar **kilos exactos desde una foto no es fiable**, ni siquiera con IA real.
+Lo medicamente sólido es el **BCS** (condición corporal), que sí se evalúa bien
+desde la silueta. Por eso: si el dueño indica el **peso real**, el sistema lo
+usa tal cual (fuente fiable); si no, da un rango orientativo por raza + BCS,
+claramente etiquetado. La app anima a introducir el peso real en el escáner.
+
+## Contrato con la app
 
 ## Contrato con la app
 

@@ -126,5 +126,10 @@ export async function analyzeMock(request: AnalysisRequest): Promise<AnalysisRes
   await new Promise((resolve) => setTimeout(resolve, 2500));
   const base =
     request.scannerId === 'condicion_corporal' ? pick(BCS_RESULTS) : pick(LABEL_RESULTS);
-  return { ...base, tipo: request.scannerId };
+  const result = { ...base, tipo: request.scannerId };
+  // Si el dueño indica un peso conocido, esa es la fuente fiable (no inventamos kilos).
+  if (request.scannerId === 'condicion_corporal' && request.pet?.pesoKg) {
+    result.peso_estimado_kg = request.pet.pesoKg;
+  }
+  return result;
 }
