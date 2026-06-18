@@ -8,12 +8,20 @@ import { ScanCounter } from '@/components/ScanCounter';
 import { PressableScale } from '@/components/ui/PressableScale';
 import { Screen } from '@/components/ui/Screen';
 import { listScanners, ScannerConfig } from '@/features/scanners/registry';
-import { t } from '@/i18n';
+import { t, TKey } from '@/i18n';
 import { usePurchases } from '@/services/purchases';
 import { freeScansLeft, useAppStore, usePrimaryPet } from '@/store/useAppStore';
 import { bcsColor, colors, gradients, radius, scoreColor, shadow, spacing, type } from '@/theme';
+import { buildDashboard, DASH_SUB_KEYS, DASH_VALUE_KEYS, DashItem, Tone } from '@/utils/dashboard';
 import { formatScanDate } from '@/utils/dates';
-import { careStreak, deriveAlerts } from '@/utils/health';
+import { careStreak } from '@/utils/health';
+
+const TONE_COLOR: Record<Tone, string> = {
+  good: colors.good,
+  warn: colors.warn,
+  bad: colors.bad,
+  neutral: colors.text,
+};
 
 /** Degradado del contenedor del icono de cada escáner (solo presentación). */
 const ICON_GRADIENT: Record<string, readonly [string, string]> = {
@@ -30,8 +38,8 @@ export default function Home() {
   const healthRecords = useAppStore((s) => s.healthRecords);
   const lastScan = scans[0];
 
-  const alerts = deriveAlerts(pet, scans, reminders);
   const streak = careStreak(scans, healthRecords);
+  const dash = buildDashboard(pet, scans, healthRecords, reminders);
   const canScan = premium || freeScansLeft(freeScansUsed) > 0;
 
   const openScanner = (scanner: ScannerConfig) => {
@@ -74,18 +82,15 @@ export default function Home() {
         </LinearGradient>
       </FadeIn>
 
-      {alerts.length > 0 && (
-        <FadeIn delay={120}>
-          <PressableScale style={styles.alertBanner} onPress={() => router.push('/salud')}>
-            <Text style={styles.alertEmoji}>⚠️</Text>
-            <Text style={[type.small, { flex: 1, fontWeight: '600', color: colors.text }]}>
-              {alerts[0].text}
-              {alerts.length > 1 ? ` (+${alerts.length - 1})` : ''}
-            </Text>
-            <Text style={styles.chevron}>›</Text>
-          </PressableScale>
-        </FadeIn>
-      )}
+      {/* Resumen tipo panel (etiquetas): peso, objetivo, estado, nutrición… */}
+      <Text style={[styles.sectionLabel, styles.section]}>{t('home.summary')}</Text>
+      <View style={styles.grid}>
+        {dash.map((item, index) => (
+          <FadeIn key={item.id} delay={80 + index * 50} style={styles.gridItem}>
+            <SummaryCard item={item} />
+          </FadeIn>
+        ))}
+      </View>
 
       <Text style={[styles.sectionLabel, styles.section]}>{t('home.scanners')}</Text>
       <View style={{ gap: spacing.md }}>
@@ -146,7 +151,52 @@ export default function Home() {
   );
 }
 
+function SummaryCard({ item }: { item: DashItem }) {
+  const color = TONE_COLOR[item.tone];
+  const value = DASH_VALUE_KEYS.has(item.value) ? t(item.value as TKey) : item.value;
+  const sub = item.sub && DASH_SUB_KEYS.has(item.sub) ? t(item.sub as TKey) : item.sub;
+  const body = (
+    <View style={[styles.summaryCard, { borderLeftColor: color }]}>
+      <View style={styles.summaryTop}>
+        <Text style={styles.summaryEmoji}>{item.emoji}</Text>
+        <Text style={styles.summaryLabel} numberOfLines={1}>
+          {t(item.labelKey)}
+        </Text>
+      </View>
+      <Text style={[styles.summaryValue, { color }]} numberOfLines={1}>
+        {value}
+      </Text>
+      {sub ? (
+        <Text style={styles.summarySub} numberOfLines={1}>
+          {sub}
+        </Text>
+      ) : null}
+    </View>
+  );
+  if (!item.route) return body;
+  return (
+    <PressableScale onPress={() => router.push(item.route as never)}>{body}</PressableScale>
+  );
+}
+
 const styles = StyleSheet.create({
+  grid: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
+  gridItem: { width: '48%' },
+  summaryCard: {
+    backgroundColor: colors.surface,
+    borderRadius: radius.md,
+    padding: spacing.md,
+    gap: 4,
+    borderLeftWidth: 4,
+    minHeight: 92,
+    justifyContent: 'center',
+    ...shadow.soft,
+  },
+  summaryTop: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  summaryEmoji: { fontSize: 15 },
+  summaryLabel: { ...type.small, fontWeight: '600', color: colors.textMuted, flex: 1 },
+  summaryValue: { fontSize: 19, fontWeight: '800', color: colors.text },
+  summarySub: { ...type.small, color: colors.textMuted },
   hero: {
     borderRadius: radius.lg,
     padding: spacing.lg,
@@ -155,17 +205,6 @@ const styles = StyleSheet.create({
     ...shadow.soft,
   },
   header: { flexDirection: 'row', alignItems: 'center', gap: spacing.md },
-  alertBanner: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-    backgroundColor: colors.warnSoft,
-    borderRadius: radius.md,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    marginTop: spacing.md,
-  },
-  alertEmoji: { fontSize: 18 },
   eyebrow: { ...type.small, fontWeight: '600', color: colors.textMuted },
   greeting: { fontSize: 23, fontWeight: '800', lineHeight: 28, color: colors.text },
   streak: {
