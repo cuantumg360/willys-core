@@ -67,7 +67,8 @@ const SCHEMA = {
     recomendaciones: { type: 'array', items: { type: 'string' } },
     confianza: { type: 'string', enum: ['alta', 'media', 'baja'] },
     requiere_veterinario: { type: 'boolean' },
-    peso_estimado_kg: { type: ['number', 'null'] },
+    // Opcional (solo en condicion_corporal); se omite en etiqueta.
+    peso_estimado_kg: { type: 'number' },
   },
   required: [
     'tipo',
@@ -79,7 +80,6 @@ const SCHEMA = {
     'recomendaciones',
     'confianza',
     'requiere_veterinario',
-    'peso_estimado_kg',
   ],
 };
 
