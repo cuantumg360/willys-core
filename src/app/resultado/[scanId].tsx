@@ -113,82 +113,84 @@ export default function Result() {
 
   return (
     <Screen>
-      <FadeIn offsetY={6} style={{ alignItems: 'center', gap: spacing.xs, marginBottom: spacing.md }}>
+      <FadeIn offsetY={6} style={{ alignItems: 'center', marginBottom: spacing.md }}>
         <Text style={styles.analyzedBadge}>✓ {t('result.analyzed')}</Text>
       </FadeIn>
 
-      {/* Mapa corporal interactivo sobre la FOTO REAL del perro (solo BCS) */}
-      {isBcs && (
-        <FadeIn offsetY={10} style={{ marginBottom: spacing.lg }}>
-          <BodyMap bcs={result.puntuacion} sidePhoto={sidePhoto} topPhoto={topPhoto} />
-        </FadeIn>
-      )}
-
-      <FadeIn style={styles.scoreCard} offsetY={8}>
+      {/* Veredicto: la nota grande y clara, lo primero */}
+      <FadeIn style={styles.heroCard} offsetY={8}>
         {scanner.resultKind === 'gauge-bcs' ? (
           <Gauge value={result.puntuacion} categoria={result.categoria} />
         ) : (
           <ScoreBar value={result.puntuacion} categoria={result.categoria} />
         )}
+        <Text style={[type.title, { textAlign: 'center' }]}>{result.titulo_resultado}</Text>
         <Text style={[type.small, { textAlign: 'center' }]}>{t(scanner.scaleLabelKey)}</Text>
-        {result.tipo === 'condicion_corporal' && result.peso_estimado_kg ? (
+        {result.tipo === 'condicion_corporal' && (
           <View style={styles.insights}>
-            <Text style={styles.insight}>
-              {pet?.pesoKg === result.peso_estimado_kg
-                ? t('result.knownWeight', { kg: result.peso_estimado_kg })
-                : t('result.estimatedWeight', { kg: result.peso_estimado_kg })}
-            </Text>
+            {result.peso_estimado_kg ? (
+              <Text style={styles.insight}>
+                {pet?.pesoKg === result.peso_estimado_kg
+                  ? t('result.knownWeight', { kg: result.peso_estimado_kg })
+                  : t('result.estimatedWeight', { kg: result.peso_estimado_kg })}
+              </Text>
+            ) : null}
             <Text style={styles.insight}>
               {t('result.comparePct', { pct: bcsPercentile(result.puntuacion) })}
             </Text>
           </View>
-        ) : null}
+        )}
       </FadeIn>
 
-      <View style={{ gap: spacing.lg, marginTop: spacing.lg }}>
-        <FadeIn delay={140} style={{ gap: spacing.sm }}>
-          <Text style={type.title}>{result.titulo_resultado}</Text>
-          <Text style={type.bodyMuted}>{result.explicacion}</Text>
-          {result.confianza === 'media' && (
-            <Text style={[type.small, { fontStyle: 'italic' }]}>{t('result.confidence.media')}</Text>
-          )}
+      {/* Explicación */}
+      <FadeIn delay={120} style={styles.card}>
+        <Text style={type.body}>{result.explicacion}</Text>
+        {result.confianza === 'media' && (
+          <Text style={[type.small, { fontStyle: 'italic' }]}>{t('result.confidence.media')}</Text>
+        )}
+      </FadeIn>
+
+      {/* Dónde acumula grasa: sobre la FOTO REAL del perro (solo BCS) */}
+      {isBcs && (
+        <FadeIn delay={180} style={{ marginTop: spacing.md }}>
+          <BodyMap bcs={result.puntuacion} sidePhoto={sidePhoto} topPhoto={topPhoto} />
         </FadeIn>
+      )}
 
-        {result.requiere_veterinario && (
-          <FadeIn delay={220}>
-            <VetBanner />
-          </FadeIn>
-        )}
-
-        {result.detalles.length > 0 && (
-          <FadeIn delay={300} style={{ gap: spacing.md }}>
-            <Text style={type.heading}>{t('result.details')}</Text>
-            {result.detalles.map((detail) => (
-              <DetailRow key={detail.nombre} detail={detail} />
-            ))}
-          </FadeIn>
-        )}
-
-        {result.recomendaciones.length > 0 && (
-          <FadeIn delay={380} style={{ gap: spacing.sm }}>
-            <Text style={type.heading}>{t('result.recommendations')}</Text>
-            {result.recomendaciones.map((reco) => (
-              <View key={reco} style={styles.reco}>
-                <Text style={styles.recoBullet}>•</Text>
-                <Text style={[type.body, { flex: 1 }]}>{reco}</Text>
-              </View>
-            ))}
-          </FadeIn>
-        )}
-
-        <FadeIn delay={460} style={{ gap: spacing.lg }}>
-          <Disclaimer />
-          <View style={{ gap: spacing.sm }}>
-            <Button label={t('common.share')} onPress={share} variant="secondary" />
-            <Button label={t('common.done')} onPress={goHome} />
-          </View>
+      {result.requiere_veterinario && (
+        <FadeIn delay={240} style={{ marginTop: spacing.md }}>
+          <VetBanner />
         </FadeIn>
-      </View>
+      )}
+
+      {result.detalles.length > 0 && (
+        <FadeIn delay={300} style={[styles.card, { marginTop: spacing.md, gap: spacing.md }]}>
+          <Text style={styles.sectionTitle}>{t('result.details')}</Text>
+          {result.detalles.map((detail) => (
+            <DetailRow key={detail.nombre} detail={detail} />
+          ))}
+        </FadeIn>
+      )}
+
+      {result.recomendaciones.length > 0 && (
+        <FadeIn delay={380} style={[styles.card, { marginTop: spacing.md }]}>
+          <Text style={styles.sectionTitle}>{t('result.recommendations')}</Text>
+          {result.recomendaciones.map((reco) => (
+            <View key={reco} style={styles.reco}>
+              <Text style={styles.recoBullet}>•</Text>
+              <Text style={[type.body, { flex: 1 }]}>{reco}</Text>
+            </View>
+          ))}
+        </FadeIn>
+      )}
+
+      <FadeIn delay={460} style={{ gap: spacing.lg, marginTop: spacing.lg }}>
+        <Disclaimer />
+        <View style={{ gap: spacing.sm }}>
+          <Button label={t('common.share')} onPress={share} variant="secondary" />
+          <Button label={t('common.done')} onPress={goHome} />
+        </View>
+      </FadeIn>
 
       {/* Card de marca renderizada fuera de pantalla para capturar y compartir */}
       <View style={styles.offscreen} pointerEvents="none">
@@ -199,15 +201,23 @@ export default function Result() {
 }
 
 const styles = StyleSheet.create({
-  scoreCard: {
+  heroCard: {
     backgroundColor: colors.surface,
     borderRadius: radius.lg,
     padding: spacing.lg,
     alignItems: 'center',
     gap: spacing.md,
+    ...shadow.card,
+  },
+  card: {
+    backgroundColor: colors.surface,
+    borderRadius: radius.lg,
+    padding: spacing.lg,
+    gap: spacing.sm,
     marginTop: spacing.md,
     ...shadow.card,
   },
+  sectionTitle: { ...type.heading },
   analyzedBadge: {
     ...type.small,
     fontWeight: '800',
