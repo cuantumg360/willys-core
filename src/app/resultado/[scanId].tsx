@@ -9,7 +9,6 @@ import { Disclaimer, VetBanner } from '@/components/result/Banners';
 import { BodyMap } from '@/components/result/BodyMap';
 import { DetailRow } from '@/components/result/DetailRow';
 import { Gauge } from '@/components/result/Gauge';
-import { ScanPhotos } from '@/components/result/ScanPhotos';
 import { ScoreBar } from '@/components/result/ScoreBar';
 import { ShareCard } from '@/components/result/ShareCard';
 import { Button } from '@/components/ui/Button';
@@ -108,6 +107,9 @@ export default function Result() {
 
   const isBcs = result.tipo === 'condicion_corporal';
   const photoUris = scanId === 'ultimo' ? pendingPhotos : scan?.photoUris ?? [];
+  // photoSteps del escáner BCS: [0] = superior, [1] = lateral.
+  const topPhoto = photoUris[0];
+  const sidePhoto = photoUris[1] ?? photoUris[0];
 
   return (
     <Screen>
@@ -115,17 +117,10 @@ export default function Result() {
         <Text style={styles.analyzedBadge}>✓ {t('result.analyzed')}</Text>
       </FadeIn>
 
-      {/* Fotos reales del perro con tratamiento de "escaneo IA" */}
-      {photoUris.length > 0 && (
-        <FadeIn offsetY={8} style={{ marginBottom: spacing.lg }}>
-          <ScanPhotos uris={photoUris} />
-        </FadeIn>
-      )}
-
-      {/* Mapa corporal interactivo: la pieza estrella (solo en condición corporal) */}
+      {/* Mapa corporal interactivo sobre la FOTO REAL del perro (solo BCS) */}
       {isBcs && (
         <FadeIn offsetY={10} style={{ marginBottom: spacing.lg }}>
-          <BodyMap bcs={result.puntuacion} />
+          <BodyMap bcs={result.puntuacion} sidePhoto={sidePhoto} topPhoto={topPhoto} />
         </FadeIn>
       )}
 
