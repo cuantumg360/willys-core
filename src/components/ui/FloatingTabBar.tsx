@@ -7,12 +7,9 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Icon } from '@/components/ui/Icon';
 import { t } from '@/i18n';
-import { usePurchases } from '@/services/purchases';
-import { freeScansLeft, useAppStore } from '@/store/useAppStore';
 import { colors, gradients, shadow, spacing, type } from '@/theme';
 
-// Liquid Glass real (iOS 26) si está disponible; si no (Expo Go / iOS antiguo),
-// respaldo con BlurView (cristal esmerilado). Carga segura: nunca rompe.
+// Liquid Glass real (iOS 26) si está disponible; si no, blanco sólido limpio.
 /* eslint-disable @typescript-eslint/no-require-imports */
 let GlassViewComp: any;
 let LIQUID = false;
@@ -25,11 +22,6 @@ try {
 }
 /* eslint-enable @typescript-eslint/no-require-imports */
 
-/**
- * Fondo de la barra. Liquid Glass real solo cuando el sistema lo soporta de
- * verdad (iOS 26 dev build); en cualquier otro caso, blanco sólido limpio
- * (como MyFitnessPal). Nada de blur a medias que se vea mal.
- */
 function GlassBackground() {
   if (LIQUID && GlassViewComp) {
     return <GlassViewComp glassEffectStyle="regular" style={StyleSheet.absoluteFill} />;
@@ -44,26 +36,20 @@ interface TabDef {
   label: string;
 }
 
-// Orden visual: dos tabs · botón central de escaneo · dos tabs.
-const LEFT: TabDef[] = [
+// Pestañas planas dentro de la píldora (estilo MyFitnessPal).
+const TABS: TabDef[] = [
   { name: 'inicio', symbol: 'house.fill', emoji: '🏠', label: t('tab.inicio') },
   { name: 'salud', symbol: 'heart.fill', emoji: '❤️', label: t('tab.salud') },
-];
-const RIGHT: TabDef[] = [
   { name: 'historial', symbol: 'clock.fill', emoji: '🕒', label: t('history.title') },
   { name: 'ajustes', symbol: 'gearshape.fill', emoji: '⚙️', label: t('settings.title') },
 ];
 
 /**
- * Barra inferior flotante estilo "premium" (tipo MyFitnessPal): píldora
- * blanca elevada con sombra y un botón central de escaneo destacado. El
- * botón central no es una ruta, es la acción principal de la app.
+ * Barra inferior estilo MyFitnessPal: píldora blanca con pestañas planas y un
+ * botón redondo independiente a la derecha que abre el Asistente IA (chat).
  */
 export function FloatingTabBar({ state, navigation }: BottomTabBarProps) {
   const insets = useSafeAreaInsets();
-  const premium = usePurchases((s) => s.premium);
-  const freeScansUsed = useAppStore((s) => s.freeScansUsed);
-
   const activeName = state.routes[state.index]?.name;
 
   const go = (name: string) => {
@@ -74,23 +60,9 @@ export function FloatingTabBar({ state, navigation }: BottomTabBarProps) {
     if (!isFocused && !event.defaultPrevented) navigation.navigate(name as never);
   };
 
-  const scan = () => {
+  const openChat = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    const canScan = premium || freeScansLeft(freeScansUsed) > 0;
-    router.push(canScan ? '/escaner/condicion_corporal' : '/paywall?context=limite');
-  };
-
-  const renderTab = (tab: TabDef) => {
-    const focused = activeName === tab.name;
-    const color = focused ? colors.primary : colors.textMuted;
-    return (
-      <Pressable key={tab.name} style={styles.tab} onPress={() => go(tab.name)} hitSlop={6}>
-        <Icon symbol={tab.symbol as never} emoji={tab.emoji} size={23} color={color} />
-        <Text style={[styles.label, { color }]} numberOfLines={1}>
-          {tab.label}
-        </Text>
-      </Pressable>
-    );
+    router.push('/chat' as never);
   };
 
   return (
@@ -98,20 +70,28 @@ export function FloatingTabBar({ state, navigation }: BottomTabBarProps) {
       <View style={styles.shadowWrap}>
         <View style={styles.pill}>
           <GlassBackground />
-          {LEFT.map(renderTab)}
-
-        <View style={styles.fabSlot}>
-          <Pressable onPress={scan} style={styles.fabPress} hitSlop={8}>
-            <LinearGradient colors={gradients.brand} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.fab}>
-              <Icon symbol="viewfinder" emoji="📸" size={26} color="#FFFFFF" />
-            </LinearGradient>
-            <Text style={styles.fabLabel}>{t('tab.scan')}</Text>
-          </Pressable>
-        </View>
-
-          {RIGHT.map(renderTab)}
+          {TABS.map((tab) => {
+            const focused = activeName === tab.name;
+            const color = focused ? colors.primary : colors.textMuted;
+            return (
+              <Pressable key={tab.name} style={styles.tab} onPress={() => go(tab.name)} hitSlop={6}>
+                <Icon symbol={tab.symbol as never} emoji={tab.emoji} size={22} color={color} />
+                <Text style={[styles.label, { color }]} numberOfLines={1}>
+                  {tab.label}
+                </Text>
+              </Pressable>
+            );
+          })}
         </View>
       </View>
+
+      {/* Botón de Chat IA a la derecha del todo */}
+      <Pressable onPress={openChat} hitSlop={8} style={styles.fabPress}>
+        <LinearGradient colors={gradients.brand} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.fab}>
+          <Icon symbol="bubble.left.fill" emoji="🤖" size={24} color="#FFFFFF" />
+        </LinearGradient>
+        <Text style={styles.fabLabel}>{t('chat.title')}</Text>
+      </Pressable>
     </View>
   );
 }
@@ -122,11 +102,13 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
+    flexDirection: 'row',
     alignItems: 'center',
+    gap: spacing.sm,
     paddingHorizontal: spacing.lg,
   },
   shadowWrap: {
-    width: '100%',
+    flex: 1,
     borderRadius: 30,
     shadowColor: '#000',
     shadowOpacity: 0.14,
@@ -138,32 +120,27 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     borderRadius: 30,
-    paddingHorizontal: spacing.sm,
+    paddingHorizontal: spacing.xs,
     height: 66,
-    width: '100%',
     overflow: 'hidden',
     borderWidth: 1,
     borderColor: colors.border,
   },
   glassSolid: { ...StyleSheet.absoluteFillObject, backgroundColor: colors.surface },
   tab: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 3 },
-  label: { ...type.small, fontSize: 11, fontWeight: '700' },
-  fabSlot: { width: 74, alignItems: 'center' },
-  fabPress: { alignItems: 'center', gap: 3 },
+  label: { ...type.small, fontSize: 10, fontWeight: '700' },
+  fabPress: { alignItems: 'center', gap: 2 },
   fab: {
     width: 58,
     height: 58,
     borderRadius: 29,
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: -26,
-    borderWidth: 4,
-    borderColor: colors.surface,
     ...shadow.card,
     shadowColor: colors.primary,
     shadowOpacity: 0.4,
     shadowRadius: 12,
     shadowOffset: { width: 0, height: 6 },
   },
-  fabLabel: { ...type.small, fontSize: 11, fontWeight: '800', color: colors.primary, marginTop: -2 },
+  fabLabel: { fontSize: 10, fontWeight: '800', color: colors.primary },
 });

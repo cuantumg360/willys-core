@@ -1,4 +1,5 @@
 import * as Haptics from 'expo-haptics';
+import { Image } from 'expo-image';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useRef } from 'react';
 import { Alert, StyleSheet, Text, View } from 'react-native';
@@ -6,11 +7,10 @@ import * as Sharing from 'expo-sharing';
 
 import { FadeIn } from '@/components/anim/FadeIn';
 import { Disclaimer, VetBanner } from '@/components/result/Banners';
-import { BodyMap } from '@/components/result/BodyMap';
 import { DetailRow } from '@/components/result/DetailRow';
-import { Gauge } from '@/components/result/Gauge';
-import { ScoreBar } from '@/components/result/ScoreBar';
+import { ScoreRing } from '@/components/result/ScoreRing';
 import { ShareCard } from '@/components/result/ShareCard';
+import { ZoneBreakdown } from '@/components/result/ZoneBreakdown';
 import { Button } from '@/components/ui/Button';
 import { Screen } from '@/components/ui/Screen';
 import { getScanner } from '@/features/scanners/registry';
@@ -67,10 +67,6 @@ export default function Result() {
   const share = async () => {
     if (!shareRef.current) return;
     try {
-      // react-native-view-shot es un módulo nativo que NO existe en Expo Go:
-      // se carga de forma diferida (solo al compartir) para no romper el
-      // arranque. La captura real funciona en el development build / la app
-      // compilada; en Expo Go avisamos en lugar de fallar.
       // eslint-disable-next-line @typescript-eslint/no-require-imports
       const { captureRef } = require('react-native-view-shot');
       const uri = await captureRef(shareRef, { format: 'png', quality: 1 });
@@ -106,10 +102,10 @@ export default function Result() {
   }
 
   const isBcs = result.tipo === 'condicion_corporal';
+  const color = isBcs ? bcsColor(result.puntuacion) : scoreColor(result.puntuacion);
+  const max = isBcs ? 9 : 100;
+  const suffix = isBcs ? '/9' : undefined;
   const photoUris = scanId === 'ultimo' ? pendingPhotos : scan?.photoUris ?? [];
-  // photoSteps del escáner BCS: [0] = superior, [1] = lateral.
-  const topPhoto = photoUris[0];
-  const sidePhoto = photoUris[1] ?? photoUris[0];
 
   return (
     <Screen>
@@ -117,54 +113,64 @@ export default function Result() {
         <Text style={styles.analyzedBadge}>✓ {t('result.analyzed')}</Text>
       </FadeIn>
 
-      {/* Veredicto: la nota grande y clara, lo primero */}
+      {/* Veredicto: anillo de puntuación grande */}
       <FadeIn style={styles.heroCard} offsetY={8}>
-        {scanner.resultKind === 'gauge-bcs' ? (
-          <Gauge value={result.puntuacion} categoria={result.categoria} />
-        ) : (
-          <ScoreBar value={result.puntuacion} categoria={result.categoria} />
-        )}
+        <ScoreRing value={result.puntuacion} max={max} categoria={result.categoria} color={color} suffix={suffix} />
         <Text style={[type.title, { textAlign: 'center' }]}>{result.titulo_resultado}</Text>
         <Text style={[type.small, { textAlign: 'center' }]}>{t(scanner.scaleLabelKey)}</Text>
-        {result.tipo === 'condicion_corporal' && (
-          <View style={styles.insights}>
+        {isBcs && (
+          <View style={styles.chips}>
             {result.peso_estimado_kg ? (
-              <Text style={styles.insight}>
+              <Text style={styles.chip}>
                 {pet?.pesoKg === result.peso_estimado_kg
                   ? t('result.knownWeight', { kg: result.peso_estimado_kg })
                   : t('result.estimatedWeight', { kg: result.peso_estimado_kg })}
               </Text>
             ) : null}
-            <Text style={styles.insight}>
-              {t('result.comparePct', { pct: bcsPercentile(result.puntuacion) })}
-            </Text>
+            <Text style={styles.chip}>{t('result.comparePct', { pct: bcsPercentile(result.puntuacion) })}</Text>
           </View>
         )}
       </FadeIn>
 
+      {/* Tus fotos: limpias, sin nada superpuesto */}
+      {photoUris.length > 0 && (
+        <FadeIn delay={120} style={styles.card}>
+          <Text style={styles.sectionTitle}>{t('result.yourPhotos')}</Text>
+          <View style={styles.photoRow}>
+            {photoUris.slice(0, 2).map((uri) => (
+              <Image key={uri} source={{ uri }} style={styles.photo} contentFit="cover" transition={180} />
+            ))}
+          </View>
+        </FadeIn>
+      )}
+
+      {/* Análisis por zonas (solo BCS): claro, sin glows sobre la foto */}
+      {isBcs && (
+        <FadeIn delay={180} style={styles.card}>
+          <View style={{ gap: 2, marginBottom: spacing.xs }}>
+            <Text style={styles.sectionTitle}>{t('result.zones.title')}</Text>
+            <Text style={type.small}>{t('result.zones.caption')}</Text>
+          </View>
+          <ZoneBreakdown bcs={result.puntuacion} />
+        </FadeIn>
+      )}
+
       {/* Explicación */}
-      <FadeIn delay={120} style={styles.card}>
+      <FadeIn delay={240} style={styles.card}>
         <Text style={type.body}>{result.explicacion}</Text>
         {result.confianza === 'media' && (
           <Text style={[type.small, { fontStyle: 'italic' }]}>{t('result.confidence.media')}</Text>
         )}
       </FadeIn>
 
-      {/* Dónde acumula grasa: sobre la FOTO REAL del perro (solo BCS) */}
-      {isBcs && (
-        <FadeIn delay={180} style={{ marginTop: spacing.md }}>
-          <BodyMap bcs={result.puntuacion} sidePhoto={sidePhoto} topPhoto={topPhoto} />
-        </FadeIn>
-      )}
-
       {result.requiere_veterinario && (
-        <FadeIn delay={240} style={{ marginTop: spacing.md }}>
+        <FadeIn delay={280} style={{ marginTop: spacing.md }}>
           <VetBanner />
         </FadeIn>
       )}
 
       {result.detalles.length > 0 && (
-        <FadeIn delay={300} style={[styles.card, { marginTop: spacing.md, gap: spacing.md }]}>
+        <FadeIn delay={320} style={[styles.card, { gap: spacing.md }]}>
           <Text style={styles.sectionTitle}>{t('result.details')}</Text>
           {result.detalles.map((detail) => (
             <DetailRow key={detail.nombre} detail={detail} />
@@ -173,7 +179,7 @@ export default function Result() {
       )}
 
       {result.recomendaciones.length > 0 && (
-        <FadeIn delay={380} style={[styles.card, { marginTop: spacing.md }]}>
+        <FadeIn delay={380} style={styles.card}>
           <Text style={styles.sectionTitle}>{t('result.recommendations')}</Text>
           {result.recomendaciones.map((reco) => (
             <View key={reco} style={styles.reco}>
@@ -229,14 +235,8 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     letterSpacing: 0.4,
   },
-  insights: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'center',
-    gap: spacing.sm,
-    marginTop: spacing.xs,
-  },
-  insight: {
+  chips: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: spacing.sm },
+  chip: {
     ...type.small,
     fontWeight: '600',
     color: colors.primaryDark,
@@ -246,6 +246,8 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     overflow: 'hidden',
   },
+  photoRow: { flexDirection: 'row', gap: spacing.sm },
+  photo: { flex: 1, height: 150, borderRadius: radius.md, backgroundColor: colors.surfaceMuted },
   reco: { flexDirection: 'row', gap: spacing.sm },
   recoBullet: { color: colors.primary, fontWeight: '800', fontSize: 17 },
   lowConfidence: {
