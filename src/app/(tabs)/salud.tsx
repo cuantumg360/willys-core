@@ -45,7 +45,7 @@ export default function Salud() {
 
   if (!pet) {
     return (
-      <Screen>
+      <Screen floatingTabBar>
         <Text style={type.title}>{t('salud.titleNoPet')}</Text>
         <View style={styles.empty}>
           <Text style={styles.emptyEmoji}>🐾</Text>
@@ -117,7 +117,7 @@ export default function Salud() {
     ]);
 
   return (
-    <Screen>
+    <Screen floatingTabBar>
       <LinearGradient colors={gradients.hero} style={styles.hero}>
         <PetAvatar uri={pet.fotoUri} size={48} />
         <Text style={[type.title, { flex: 1 }]}>{t('salud.title', { name: pet.nombre })}</Text>

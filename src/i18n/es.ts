@@ -216,6 +216,9 @@ export const es = {
   'history.trend.title': 'Evolución de {name}',
   'history.trend.caption': 'Condición corporal (BCS) · la banda verde es el rango ideal',
 
+  // ── Navegación / tabs ───────────────────────────────────────────────
+  'tab.inicio': 'Inicio',
+  'tab.scan': 'Escanear',
   // ── Salud (centro de salud) ─────────────────────────────────────────
   'tab.salud': 'Salud',
   'salud.title': 'Salud de {name}',

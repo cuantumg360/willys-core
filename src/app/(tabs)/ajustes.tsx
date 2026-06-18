@@ -76,7 +76,7 @@ export default function Settings() {
   const replayTutorial = () => router.push('/onboarding');
 
   return (
-    <Screen>
+    <Screen floatingTabBar>
       <Text style={type.title}>{t('settings.title')}</Text>
 
       <Section title={t('settings.pet.section')}>

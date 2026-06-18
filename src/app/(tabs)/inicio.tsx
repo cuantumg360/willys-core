@@ -41,7 +41,7 @@ export default function Home() {
   };
 
   return (
-    <Screen>
+    <Screen floatingTabBar>
       <FadeIn offsetY={8}>
         <LinearGradient colors={gradients.hero} style={styles.hero}>
           <View style={styles.header}>

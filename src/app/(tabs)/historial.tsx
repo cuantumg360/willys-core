@@ -25,7 +25,7 @@ export default function History() {
     .reverse();
 
   return (
-    <Screen>
+    <Screen floatingTabBar>
       <LinearGradient colors={gradients.hero} style={styles.hero}>
         <PetAvatar uri={pet?.fotoUri} size={48} />
         <View style={{ flex: 1, gap: 2 }}>
