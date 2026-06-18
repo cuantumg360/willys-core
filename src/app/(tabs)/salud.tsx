@@ -1,5 +1,7 @@
 import { LinearGradient } from 'expo-linear-gradient';
+import * as Print from 'expo-print';
 import { router } from 'expo-router';
+import * as Sharing from 'expo-sharing';
 import { Alert, Pressable, Share, StyleSheet, Text, View } from 'react-native';
 
 import { PetAvatar } from '@/components/PetAvatar';
@@ -12,6 +14,7 @@ import { useAppStore, usePrimaryPet } from '@/store/useAppStore';
 import { colors, gradients, radius, shadow, spacing, type } from '@/theme';
 import { formatScanDate } from '@/utils/dates';
 import { bcsPercentile, buildVetReport, daysUntil, deriveAlerts, reminderStatus } from '@/utils/health';
+import { buildVetReportHtml } from '@/utils/vetReportHtml';
 
 const SEVERITY_COLOR = { bad: colors.bad, warn: colors.warn, info: colors.primary } as const;
 
@@ -81,8 +84,24 @@ export default function Salud() {
     return colors.textMuted;
   };
 
-  const shareReport = () => {
-    Share.share({ message: buildVetReport(pet, scans, healthRecords, reminders) });
+  const shareReport = async () => {
+    // Informe con marca en PDF (expo-print). Si algo falla, repartimos el
+    // informe en texto plano como respaldo para no dejar al usuario sin nada.
+    try {
+      const html = buildVetReportHtml(pet, scans, healthRecords, reminders);
+      const { uri } = await Print.printToFileAsync({ html });
+      if (await Sharing.isAvailableAsync()) {
+        await Sharing.shareAsync(uri, {
+          mimeType: 'application/pdf',
+          UTI: 'com.adobe.pdf',
+          dialogTitle: t('salud.report.cta'),
+        });
+      } else {
+        Share.share({ message: buildVetReport(pet, scans, healthRecords, reminders) });
+      }
+    } catch {
+      Share.share({ message: buildVetReport(pet, scans, healthRecords, reminders) });
+    }
   };
 
   const confirmDeleteReminder = (r: Reminder) =>

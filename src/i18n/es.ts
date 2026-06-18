@@ -234,8 +234,8 @@ export const es = {
   'salud.history.add': 'Añadir al historial',
   'salud.history.none': 'Sin registros médicos todavía.',
   'salud.report.title': 'Informe para el veterinario',
-  'salud.report.desc': 'Comparte un resumen de la salud de {name} con tu veterinario.',
-  'salud.report.cta': 'Compartir informe',
+  'salud.report.desc': 'Genera un PDF con marca: condición corporal, peso, historial y próximos cuidados de {name}, listo para tu veterinario.',
+  'salud.report.cta': 'Generar informe PDF',
 
   // Tipos de registro / recordatorio
   'kind.peso': 'Peso',
