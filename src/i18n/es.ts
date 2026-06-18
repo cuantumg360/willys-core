@@ -248,6 +248,17 @@ export const es = {
   'history.empty.bodyNoPet': 'Haz tu primer escaneo y aparecerá aquí.',
   'history.trend.title': 'Evolución de {name}',
   'history.trend.caption': 'Condición corporal (BCS) · la banda verde es el rango ideal',
+  'history.stat.bcs': 'BCS actual',
+  'history.stat.scans': 'Escaneos',
+  'history.stat.streak': 'Racha',
+  'history.streakDays': '{n} d',
+  'history.filter.all': 'Todos',
+  'history.filter.body': 'Cuerpo',
+  'history.filter.label': 'Pienso',
+  'history.delta.better': '↑ Mejora',
+  'history.delta.worse': '↓ A vigilar',
+  'history.delta.same': '= Estable',
+  'history.filterEmpty': 'No hay escaneos de este tipo todavía.',
 
   // ── Navegación / tabs ───────────────────────────────────────────────
   'tab.inicio': 'Inicio',
