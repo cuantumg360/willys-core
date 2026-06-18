@@ -9,6 +9,7 @@ import { Disclaimer, VetBanner } from '@/components/result/Banners';
 import { BodyMap } from '@/components/result/BodyMap';
 import { DetailRow } from '@/components/result/DetailRow';
 import { Gauge } from '@/components/result/Gauge';
+import { ScanPhotos } from '@/components/result/ScanPhotos';
 import { ScoreBar } from '@/components/result/ScoreBar';
 import { ShareCard } from '@/components/result/ShareCard';
 import { Button } from '@/components/ui/Button';
@@ -30,6 +31,7 @@ export default function Result() {
   const { scanId, scannerId } = useLocalSearchParams<{ scanId: string; scannerId?: string }>();
   const scan = useAppStore((s) => s.scans.find((item) => item.id === scanId));
   const lastResult = usePendingScan((s) => s.lastResult);
+  const pendingPhotos = usePendingScan((s) => s.photoUris);
   const pet = usePrimaryPet();
   const shareRef = useRef<View>(null);
 
@@ -105,6 +107,7 @@ export default function Result() {
   }
 
   const isBcs = result.tipo === 'condicion_corporal';
+  const photoUris = scanId === 'ultimo' ? pendingPhotos : scan?.photoUris ?? [];
 
   return (
     <Screen>
@@ -112,7 +115,14 @@ export default function Result() {
         <Text style={styles.analyzedBadge}>✓ {t('result.analyzed')}</Text>
       </FadeIn>
 
-      {/* Mapa corporal animado: la pieza estrella (solo en condición corporal) */}
+      {/* Fotos reales del perro con tratamiento de "escaneo IA" */}
+      {photoUris.length > 0 && (
+        <FadeIn offsetY={8} style={{ marginBottom: spacing.lg }}>
+          <ScanPhotos uris={photoUris} />
+        </FadeIn>
+      )}
+
+      {/* Mapa corporal interactivo: la pieza estrella (solo en condición corporal) */}
       {isBcs && (
         <FadeIn offsetY={10} style={{ marginBottom: spacing.lg }}>
           <BodyMap bcs={result.puntuacion} />

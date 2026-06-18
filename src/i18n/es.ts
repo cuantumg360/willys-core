@@ -159,6 +159,9 @@ export const es = {
 
   // ── Resultado ───────────────────────────────────────────────────────
   'result.analyzed': 'Análisis completado',
+  'result.photos.title': 'Tu perro, analizado',
+  'result.photos.badge': 'Analizada con IA',
+  'result.photos.caption': 'Analizamos esta foto para crear tu mapa corporal',
   'result.bodymap.title': 'Mapa corporal',
   'result.bodymap.caption': 'Dónde acumula la grasa · análisis en vivo',
   'result.bodymap.tapHint': 'Toca cada zona para ver dónde acumula grasa tu perro',
