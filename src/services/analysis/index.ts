@@ -17,5 +17,12 @@ export * from './types';
  */
 export function analyze(request: AnalysisRequest): Promise<AnalysisResult> {
   const useReal = Boolean(BACKEND_URL) || flags.useRealAnalysis;
-  return useReal ? analyzeViaBackend(request) : analyzeMock(request);
+  if (!useReal) return analyzeMock(request);
+  // Resiliencia: si el backend real falla (p. ej. la clave del modelo no está
+  // configurada o no hay red), caemos al análisis local para que el escáner
+  // SIEMPRE dé un resultado en lugar de romperse.
+  return analyzeViaBackend(request).catch((error) => {
+    console.warn('[analysis] el backend falló, usando análisis local:', String(error));
+    return analyzeMock(request);
+  });
 }

@@ -15,7 +15,6 @@ import { colors, gradients, shadow, spacing, type } from '@/theme';
 // respaldo con BlurView (cristal esmerilado). Carga segura: nunca rompe.
 /* eslint-disable @typescript-eslint/no-require-imports */
 let GlassViewComp: any;
-let BlurViewComp: any;
 let LIQUID = false;
 try {
   const g = require('expo-glass-effect');
@@ -24,25 +23,16 @@ try {
 } catch {
   /* no disponible */
 }
-try {
-  BlurViewComp = require('expo-blur').BlurView;
-} catch {
-  /* no disponible */
-}
 /* eslint-enable @typescript-eslint/no-require-imports */
 
-/** Fondo "cristal" de la barra: Liquid Glass → Blur → sólido translúcido. */
+/**
+ * Fondo de la barra. Liquid Glass real solo cuando el sistema lo soporta de
+ * verdad (iOS 26 dev build); en cualquier otro caso, blanco sólido limpio
+ * (como MyFitnessPal). Nada de blur a medias que se vea mal.
+ */
 function GlassBackground() {
   if (LIQUID && GlassViewComp) {
     return <GlassViewComp glassEffectStyle="regular" style={StyleSheet.absoluteFill} />;
-  }
-  if (BlurViewComp) {
-    return (
-      <>
-        <BlurViewComp intensity={36} tint="light" style={StyleSheet.absoluteFill} />
-        <View style={styles.glassTint} pointerEvents="none" />
-      </>
-    );
   }
   return <View style={styles.glassSolid} pointerEvents="none" />;
 }
@@ -153,9 +143,8 @@ const styles = StyleSheet.create({
     width: '100%',
     overflow: 'hidden',
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.55)',
+    borderColor: colors.border,
   },
-  glassTint: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(255,255,255,0.45)' },
   glassSolid: { ...StyleSheet.absoluteFillObject, backgroundColor: colors.surface },
   tab: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 3 },
   label: { ...type.small, fontSize: 11, fontWeight: '700' },
