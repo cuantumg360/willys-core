@@ -21,8 +21,12 @@ nube con EAS, sin Mac). Sigue estos pasos en orden.
    - **Anual** — 39,99 € — id: `guau_annual` — añade una **oferta
      introductoria** de **3 días gratis** (free trial). (En el paywall se
      muestra como "0,77 €/semana" para que se perciba más barato.)
-   - **Lifetime fundador** — compra única (no suscripción) 24,99 € — id:
+   - **Fundador (de por vida)** — compra única (no suscripción) **34,99 €** — id:
      `guau_lifetime` (créalo como *Non-Consumable* en "Compras dentro de la app").
+     **Campaña de 50 plazas**: Apple no limita la cantidad automáticamente, así
+     que el tope se controla **a mano** — cuando lleves 50 ventas, retira/oculta
+     el producto en App Store Connect (o desactiva `flags.lifetimeFounder`). La
+     app ya muestra "50 plazas" en el paywall y el flag está activo.
 4. Rellena precios por país (Apple ofrece tiers regionalizados automáticos
    para LatAm) y los metadatos mínimos. Disponibilidad: todos los países
    hispanohablantes.

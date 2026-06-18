@@ -8,8 +8,8 @@ export const flags = {
   useRealAnalysis: false,
   /** Fase 3: usar RevenueCat real en lugar del mock de compras. */
   useRealPurchases: false,
-  /** Producto oculto "Lifetime fundador" en el paywall (campaña de reservas). */
-  lifetimeFounder: false,
+  /** Producto "Lifetime fundador" en el paywall (campaña de reservas, 50 plazas). */
+  lifetimeFounder: true,
   /** Fase 2: escáner de toxicidad (planta/alimento/objeto). */
   toxicityScanner: false,
   /** Fase 3: modo gato. */

@@ -1,17 +1,20 @@
+// @ts-nocheck — Este archivo es código Deno (se ejecuta en Supabase, NO en la
+// app). VS Code lo revisaría con las reglas de la app y marcaría falsos errores
+// ("Cannot find name 'Deno'", "npm:..."); Deno lo valida y ejecuta sin problema.
+//
 // Supabase Edge Function (Deno) — motor de análisis con IA de visión.
 //
 // La API key de Anthropic vive SOLO aquí (variable de entorno del servidor),
-// nunca en la app. Recibe las fotos comprimidas que envía el cliente, llama a
-// Claude con visión y devuelve el JSON del contrato (src/services/analysis/types.ts),
-// garantizado por "structured outputs".
-//
-// Despliegue: ver backend/README.md
-//   supabase functions deploy analyze --no-verify-jwt
-//   supabase secrets set ANTHROPIC_API_KEY=sk-ant-...
+// NUNCA en este archivo ni en la app. La clave se pone con `supabase secrets
+// set` (se escribe en la terminal, no se guarda en el código). Despliegue y
+// configuración: ver backend/README.md.
 
 import Anthropic from 'npm:@anthropic-ai/sdk@^0.69.0';
 
-const MODEL = 'claude-opus-4-8';
+// Modelo de visión. Sonnet 4.6: excelente para esto y ~2x más barato que Opus
+// (clave para el margen de una app de consumo). Cambia a 'claude-opus-4-8' si
+// quieres la máxima capacidad a más coste.
+const MODEL = 'claude-sonnet-4-6';
 
 const cors = {
   'Access-Control-Allow-Origin': '*',

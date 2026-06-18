@@ -55,7 +55,8 @@ Pendiente (siguiente refinamiento):
 
 Ya implementado como **Supabase Edge Function** en
 `backend/supabase/functions/analyze/index.ts`. Hace de proxy entre la app y
-**Claude Opus 4.8 con visión** (Anthropic). **La API key del modelo vive solo
+**Claude Sonnet 4.6 con visión** (Anthropic; equilibrio calidad/coste — se
+cambia en la constante `MODEL` de la función). **La API key del modelo vive solo
 aquí, nunca en el cliente**, y la salida es JSON garantizado por esquema
 ("structured outputs").
 
