@@ -1,7 +1,10 @@
+import { LinearGradient } from 'expo-linear-gradient';
 import { Redirect, router, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
+import { FadeIn } from '@/components/anim/FadeIn';
+import { Pop } from '@/components/anim/Pop';
 import { BreedPicker } from '@/components/BreedPicker';
 import { Button } from '@/components/ui/Button';
 import { Field } from '@/components/ui/Field';
@@ -11,7 +14,7 @@ import { t } from '@/i18n';
 import { track } from '@/services/analytics';
 import { usePendingScan } from '@/store/usePendingScan';
 import { usePrimaryPet } from '@/store/useAppStore';
-import { colors, radius, spacing, type } from '@/theme';
+import { colors, gradients, radius, shadow, spacing, type } from '@/theme';
 
 /** Intro del escáner: qué fotos haremos + datos opcionales (BCS). */
 export default function ScannerIntro() {
@@ -40,22 +43,28 @@ export default function ScannerIntro() {
   return (
     <Screen>
       <View style={{ flex: 1, gap: spacing.lg, justifyContent: 'center' }}>
-        <Text style={styles.emoji}>{scanner.emoji}</Text>
-        <Text style={[type.title, { textAlign: 'center' }]}>{t(scanner.titleKey)}</Text>
-        <Text style={[type.bodyMuted, { textAlign: 'center' }]}>
-          {t(scanner.introKey, { name: petName })}
-        </Text>
+        <Pop style={styles.emblemWrap}>
+          <LinearGradient colors={gradients.brand} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.emblem}>
+            <Text style={styles.emoji}>{scanner.emoji}</Text>
+          </LinearGradient>
+        </Pop>
+        <FadeIn delay={140} style={{ gap: spacing.sm }}>
+          <Text style={[type.title, { textAlign: 'center' }]}>{t(scanner.titleKey)}</Text>
+          <Text style={[type.bodyMuted, { textAlign: 'center' }]}>
+            {t(scanner.introKey, { name: petName })}
+          </Text>
+        </FadeIn>
 
         <View style={{ gap: spacing.sm }}>
           {scanner.photoSteps.map((step, index) => (
-            <View key={step.id} style={styles.step}>
-              <View style={styles.stepNumber}>
+            <FadeIn key={step.id} delay={260 + index * 110} offsetY={12} style={styles.step}>
+              <LinearGradient colors={gradients.brand} style={styles.stepNumber}>
                 <Text style={styles.stepNumberText}>{index + 1}</Text>
-              </View>
+              </LinearGradient>
               <Text style={[type.body, { flex: 1, fontWeight: '600' }]}>
                 {t(step.titleKey, { name: petName })}
               </Text>
-            </View>
+            </FadeIn>
           ))}
         </View>
 
@@ -80,7 +89,16 @@ export default function ScannerIntro() {
 }
 
 const styles = StyleSheet.create({
-  emoji: { fontSize: 64, textAlign: 'center' },
+  emblemWrap: { alignItems: 'center' },
+  emblem: {
+    width: 96,
+    height: 96,
+    borderRadius: 30,
+    alignItems: 'center',
+    justifyContent: 'center',
+    ...shadow.card,
+  },
+  emoji: { fontSize: 48, textAlign: 'center' },
   step: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -90,14 +108,14 @@ const styles = StyleSheet.create({
     borderColor: colors.border,
     borderRadius: radius.md,
     padding: spacing.md,
+    ...shadow.card,
   },
   stepNumber: {
     width: 28,
     height: 28,
     borderRadius: 14,
-    backgroundColor: colors.primarySoft,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  stepNumberText: { color: colors.primaryDark, fontWeight: '800' },
+  stepNumberText: { color: '#FFFFFF', fontWeight: '800' },
 });
