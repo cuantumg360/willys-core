@@ -63,11 +63,12 @@ aquí, nunca en el cliente**, y la salida es JSON garantizado por esquema
 
 ## Desplegar (una vez)
 
-1. Instala la CLI de Supabase y enlaza tu proyecto:
+1. Instala la CLI de Supabase y enlaza tu proyecto (ref del proyecto
+   "guau v1": `jnyowsltrjsqkidgcgol`):
    ```bash
    npm install -g supabase
    supabase login
-   supabase link --project-ref TU_PROJECT_REF
+   supabase link --project-ref jnyowsltrjsqkidgcgol
    ```
 2. Guarda la API key de Anthropic como secreto del servidor (NO en la app):
    ```bash
@@ -81,7 +82,7 @@ aquí, nunca en el cliente**, y la salida es JSON garantizado por esquema
    > pausa, reactívalo en el panel antes de desplegar.
 4. En la app, en `.env`, apunta al backend (el cliente añade `/analyze`):
    ```
-   EXPO_PUBLIC_BACKEND_URL=https://TU_PROJECT_REF.supabase.co/functions/v1
+   EXPO_PUBLIC_BACKEND_URL=https://jnyowsltrjsqkidgcgol.supabase.co/functions/v1
    ```
 5. Activa el flag en `src/config/flags.ts`:
    ```ts
