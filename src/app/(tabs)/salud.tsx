@@ -1,3 +1,4 @@
+import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import { Alert, Pressable, Share, StyleSheet, Text, View } from 'react-native';
 
@@ -8,7 +9,7 @@ import { Screen } from '@/components/ui/Screen';
 import { t } from '@/i18n';
 import { HealthRecord, Reminder } from '@/store/types';
 import { useAppStore, usePrimaryPet } from '@/store/useAppStore';
-import { colors, radius, shadow, spacing, type } from '@/theme';
+import { colors, gradients, radius, shadow, spacing, type } from '@/theme';
 import { formatScanDate } from '@/utils/dates';
 import { bcsPercentile, buildVetReport, daysUntil, deriveAlerts, reminderStatus } from '@/utils/health';
 
@@ -98,10 +99,10 @@ export default function Salud() {
 
   return (
     <Screen>
-      <View style={styles.header}>
-        <PetAvatar uri={pet.fotoUri} size={44} />
-        <Text style={type.title}>{t('salud.title', { name: pet.nombre })}</Text>
-      </View>
+      <LinearGradient colors={gradients.hero} style={styles.hero}>
+        <PetAvatar uri={pet.fotoUri} size={48} />
+        <Text style={[type.title, { flex: 1 }]}>{t('salud.title', { name: pet.nombre })}</Text>
+      </LinearGradient>
 
       {/* Alertas */}
       {alerts.length > 0 && (
@@ -230,7 +231,17 @@ export default function Salud() {
 }
 
 const styles = StyleSheet.create({
-  header: { flexDirection: 'row', alignItems: 'center', gap: spacing.md, marginBottom: spacing.md },
+  hero: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
+    marginBottom: spacing.lg,
+    padding: spacing.lg,
+    borderRadius: radius.lg,
+    borderWidth: 1,
+    borderColor: colors.border,
+    ...shadow.soft,
+  },
   empty: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: spacing.sm },
   emptyEmoji: { fontSize: 56 },
   card: {

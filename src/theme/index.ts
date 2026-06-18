@@ -72,6 +72,19 @@ export const shadow: Record<'card' | 'soft', ViewStyle> = {
     }) ?? {},
 };
 
+/** Degradados de marca (para LinearGradient: start→end). Look premium. */
+export const gradients = {
+  brand: ['#22B083', '#0E7C58'] as const,
+  brandSoft: ['#E9F8F1', '#D5F0E5'] as const,
+  hero: ['#F6FBF8', '#E6F4EE'] as const,
+  warm: ['#FFF3EC', '#FDE6DB'] as const,
+  // Mapa corporal / resultado
+  good: ['#3DD68C', '#1FA47C'] as const,
+  warn: ['#FFC24B', '#F0A422'] as const,
+  bad: ['#FF6B6F', '#E5484D'] as const,
+  dark: ['#1F2A24', '#10201A'] as const,
+} as const;
+
 /**
  * Una sola fuente: la del sistema con pesos marcados.
  * TODO diseño: sustituir por una redondeada (p. ej. Nunito) vía expo-font.

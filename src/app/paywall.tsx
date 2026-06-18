@@ -1,16 +1,18 @@
+import { LinearGradient } from 'expo-linear-gradient';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { FadeIn } from '@/components/anim/FadeIn';
 import { Button } from '@/components/ui/Button';
+import { APP_NAME } from '@/config/app';
 import { flags } from '@/config/flags';
 import { t } from '@/i18n';
 import { track } from '@/services/analytics';
 import { PlanId, usePurchases } from '@/services/purchases';
 import { useAppStore, usePrimaryPet } from '@/store/useAppStore';
-import { colors, radius, spacing, type } from '@/theme';
+import { colors, gradients, radius, shadow, spacing, type } from '@/theme';
 
 const BULLETS = ['paywall.bullet1', 'paywall.bullet2', 'paywall.bullet3'] as const;
 
@@ -73,13 +75,22 @@ export default function Paywall() {
   };
 
   return (
-    <View style={[styles.screen, { paddingTop: insets.top + spacing.md, paddingBottom: insets.bottom + spacing.md }]}>
+    <View style={styles.screen}>
       {showClose && (
-        <Pressable accessibilityLabel={t('common.close')} onPress={close} style={styles.close} hitSlop={12}>
+        <Pressable accessibilityLabel={t('common.close')} onPress={close} style={[styles.close, { top: insets.top + spacing.sm }]} hitSlop={12}>
           <Text style={styles.closeText}>✕</Text>
         </Pressable>
       )}
 
+      <ScrollView
+        contentContainerStyle={{
+          paddingTop: insets.top + spacing.xl,
+          paddingBottom: insets.bottom + spacing.lg,
+          paddingHorizontal: spacing.lg,
+          gap: spacing.lg,
+        }}
+        showsVerticalScrollIndicator={false}
+      >
       <FadeIn style={styles.top} offsetY={16} duration={520}>
         <Text style={styles.emoji}>🐾</Text>
         <Text style={[type.title, { textAlign: 'center' }]}>
@@ -93,6 +104,30 @@ export default function Paywall() {
             </FadeIn>
           ))}
         </View>
+      </FadeIn>
+
+      {/* Anclaje de valor: lo que costaría por separado (~200€) vs 39,99€ */}
+      <FadeIn delay={240}>
+        <LinearGradient colors={gradients.hero} style={styles.valueCard}>
+          <Text style={styles.valueTitle}>{t('paywall.value.title')}</Text>
+          {VALUE_ROWS.map((row) => (
+            <View key={row.k} style={styles.valueRow}>
+              <Text style={[type.body, { flex: 1 }]}>{t(row.k)}</Text>
+              <Text style={styles.valueItemPrice}>{t(row.p)}</Text>
+            </View>
+          ))}
+          <View style={styles.valueDivider} />
+          <View style={styles.valueRow}>
+            <Text style={[type.body, { flex: 1, fontWeight: '700' }]}>
+              {t('paywall.value.totalLabel')}
+            </Text>
+            <Text style={styles.valueTotalStrike}>{t('paywall.value.total')}</Text>
+          </View>
+          <View style={styles.valueYouRow}>
+            <Text style={styles.valueYouLabel}>{t('paywall.value.youLabel', { app: APP_NAME })}</Text>
+            <Text style={styles.valueYouPrice}>{t('paywall.value.you')}</Text>
+          </View>
+        </LinearGradient>
       </FadeIn>
 
       <View style={{ gap: spacing.sm }}>
@@ -148,9 +183,17 @@ export default function Paywall() {
           </Pressable>
         </View>
       </View>
+      </ScrollView>
     </View>
   );
 }
+
+const VALUE_ROWS = [
+  { k: 'paywall.value.r1', p: 'paywall.value.r1p' },
+  { k: 'paywall.value.r2', p: 'paywall.value.r2p' },
+  { k: 'paywall.value.r3', p: 'paywall.value.r3p' },
+  { k: 'paywall.value.r4', p: 'paywall.value.r4p' },
+] as const;
 
 function PlanOption({
   selected,
@@ -198,22 +241,48 @@ const styles = StyleSheet.create({
   screen: {
     flex: 1,
     backgroundColor: colors.background,
-    paddingHorizontal: spacing.lg,
-    justifyContent: 'space-between',
   },
   close: {
     position: 'absolute',
-    top: spacing.xl + spacing.md,
     left: spacing.lg,
     zIndex: 10,
-    width: 28,
-    height: 28,
-    borderRadius: 14,
+    width: 30,
+    height: 30,
+    borderRadius: 15,
     backgroundColor: colors.surfaceMuted,
     alignItems: 'center',
     justifyContent: 'center',
   },
   closeText: { fontSize: 14, color: colors.textMuted, fontWeight: '700' },
+  valueCard: {
+    borderRadius: radius.lg,
+    padding: spacing.lg,
+    gap: spacing.sm,
+    borderWidth: 1,
+    borderColor: colors.primarySoft,
+    ...shadow.card,
+  },
+  valueTitle: { ...type.small, fontWeight: '800', letterSpacing: 0.4, color: colors.textMuted, textTransform: 'uppercase' },
+  valueRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
+  valueItemPrice: { ...type.body, color: colors.textMuted, fontWeight: '600' },
+  valueDivider: { height: 1, backgroundColor: colors.border, marginVertical: spacing.xs },
+  valueTotalStrike: {
+    ...type.body,
+    fontWeight: '700',
+    color: colors.textMuted,
+    textDecorationLine: 'line-through',
+  },
+  valueYouRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: colors.primarySoft,
+    borderRadius: radius.md,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    marginTop: spacing.xs,
+  },
+  valueYouLabel: { ...type.heading, color: colors.primaryDark, flex: 1 },
+  valueYouPrice: { fontSize: 26, fontWeight: '800', color: colors.primary },
   planPriceBig: { fontSize: 22, fontWeight: '800', color: colors.text },
   top: { alignItems: 'center', gap: spacing.lg, marginTop: spacing.xl },
   emoji: { fontSize: 52 },

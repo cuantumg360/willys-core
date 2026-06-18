@@ -1,3 +1,4 @@
+import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
@@ -10,7 +11,7 @@ import { listScanners, ScannerConfig } from '@/features/scanners/registry';
 import { t } from '@/i18n';
 import { usePurchases } from '@/services/purchases';
 import { freeScansLeft, useAppStore, usePrimaryPet } from '@/store/useAppStore';
-import { bcsColor, colors, radius, scoreColor, shadow, spacing, type } from '@/theme';
+import { bcsColor, colors, gradients, radius, scoreColor, shadow, spacing, type } from '@/theme';
 import { formatScanDate } from '@/utils/dates';
 import { deriveAlerts } from '@/utils/health';
 
@@ -41,22 +42,25 @@ export default function Home() {
 
   return (
     <Screen>
-      <FadeIn style={styles.header} offsetY={8}>
-        <Pressable onPress={() => router.push('/mascotas')}>
-          <PetAvatar uri={pet?.fotoUri} size={56} />
-        </Pressable>
-        <View style={{ flex: 1, gap: 3 }}>
-          <Text style={styles.eyebrow}>{t('home.greetingEyebrow')}</Text>
-          <Text style={styles.greeting}>
-            {pet?.nombre
-              ? t('home.greetingPet', { name: pet.nombre })
-              : t('home.greetingNoPetTitle')}
-          </Text>
-        </View>
-      </FadeIn>
-
-      <FadeIn delay={90} style={{ marginTop: spacing.md }}>
-        <ScanCounter />
+      <FadeIn offsetY={8}>
+        <LinearGradient colors={gradients.hero} style={styles.hero}>
+          <View style={styles.header}>
+            <Pressable onPress={() => router.push('/mascotas')}>
+              <PetAvatar uri={pet?.fotoUri} size={56} />
+            </Pressable>
+            <View style={{ flex: 1, gap: 3 }}>
+              <Text style={styles.eyebrow}>{t('home.greetingEyebrow')}</Text>
+              <Text style={styles.greeting}>
+                {pet?.nombre
+                  ? t('home.greetingPet', { name: pet.nombre })
+                  : t('home.greetingNoPetTitle')}
+              </Text>
+            </View>
+          </View>
+          <View style={{ marginTop: spacing.md }}>
+            <ScanCounter />
+          </View>
+        </LinearGradient>
       </FadeIn>
 
       {alerts.length > 0 && (
@@ -129,6 +133,13 @@ export default function Home() {
 }
 
 const styles = StyleSheet.create({
+  hero: {
+    borderRadius: radius.lg,
+    padding: spacing.lg,
+    borderWidth: 1,
+    borderColor: colors.border,
+    ...shadow.soft,
+  },
   header: { flexDirection: 'row', alignItems: 'center', gap: spacing.md },
   alertBanner: {
     flexDirection: 'row',

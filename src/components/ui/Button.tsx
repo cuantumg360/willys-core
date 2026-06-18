@@ -1,8 +1,9 @@
+import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
 import { useRef } from 'react';
-import { ActivityIndicator, Animated, Pressable, StyleSheet, Text, ViewStyle } from 'react-native';
+import { ActivityIndicator, Animated, Pressable, StyleSheet, Text, View, ViewStyle } from 'react-native';
 
-import { colors, radius, spacing, type } from '@/theme';
+import { colors, gradients, radius, spacing, type } from '@/theme';
 
 interface Props {
   label: string;
@@ -24,6 +25,12 @@ export function Button({ label, onPress, variant = 'primary', disabled, loading,
     onPress();
   };
 
+  const content = loading ? (
+    <ActivityIndicator color={variant === 'primary' ? colors.textOnPrimary : colors.primary} />
+  ) : (
+    <Text style={[type.button, variant !== 'primary' && { color: colors.primary }]}>{label}</Text>
+  );
+
   return (
     <Animated.View style={[{ transform: [{ scale }] }, style]}>
       <Pressable
@@ -32,14 +39,20 @@ export function Button({ label, onPress, variant = 'primary', disabled, loading,
         onPressIn={() => spring(0.96)}
         onPressOut={() => spring(1)}
         disabled={disabled || loading}
-        style={[styles.base, styles[variant], (disabled || loading) && styles.disabled]}
       >
-        {loading ? (
-          <ActivityIndicator color={variant === 'primary' ? colors.textOnPrimary : colors.primary} />
+        {variant === 'primary' ? (
+          <LinearGradient
+            colors={gradients.brand}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={[styles.base, styles.primaryShadow, (disabled || loading) && styles.disabled]}
+          >
+            {content}
+          </LinearGradient>
         ) : (
-          <Text style={[type.button, variant !== 'primary' && { color: colors.primary }]}>
-            {label}
-          </Text>
+          <View style={[styles.base, styles[variant], (disabled || loading) && styles.disabled]}>
+            {content}
+          </View>
         )}
       </Pressable>
     </Animated.View>
@@ -53,8 +66,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: spacing.lg,
+    overflow: 'hidden',
   },
-  primary: { backgroundColor: colors.primary },
+  primaryShadow: {
+    shadowColor: colors.primary,
+    shadowOpacity: 0.35,
+    shadowRadius: 12,
+    shadowOffset: { width: 0, height: 6 },
+    elevation: 4,
+  },
   secondary: { backgroundColor: colors.primarySoft },
   ghost: { backgroundColor: 'transparent' },
   disabled: { opacity: 0.45 },

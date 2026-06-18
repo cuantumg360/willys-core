@@ -6,6 +6,7 @@ import * as Sharing from 'expo-sharing';
 
 import { FadeIn } from '@/components/anim/FadeIn';
 import { Disclaimer, VetBanner } from '@/components/result/Banners';
+import { BodyMap } from '@/components/result/BodyMap';
 import { DetailRow } from '@/components/result/DetailRow';
 import { Gauge } from '@/components/result/Gauge';
 import { ScoreBar } from '@/components/result/ScoreBar';
@@ -103,8 +104,21 @@ export default function Result() {
     );
   }
 
+  const isBcs = result.tipo === 'condicion_corporal';
+
   return (
     <Screen>
+      <FadeIn offsetY={6} style={{ alignItems: 'center', gap: spacing.xs, marginBottom: spacing.md }}>
+        <Text style={styles.analyzedBadge}>✓ {t('result.analyzed')}</Text>
+      </FadeIn>
+
+      {/* Mapa corporal animado: la pieza estrella (solo en condición corporal) */}
+      {isBcs && (
+        <FadeIn offsetY={10} style={{ marginBottom: spacing.lg }}>
+          <BodyMap bcs={result.puntuacion} />
+        </FadeIn>
+      )}
+
       <FadeIn style={styles.scoreCard} offsetY={8}>
         {scanner.resultKind === 'gauge-bcs' ? (
           <Gauge value={result.puntuacion} categoria={result.categoria} />
@@ -188,6 +202,17 @@ const styles = StyleSheet.create({
     gap: spacing.md,
     marginTop: spacing.md,
     ...shadow.card,
+  },
+  analyzedBadge: {
+    ...type.small,
+    fontWeight: '800',
+    color: colors.primaryDark,
+    backgroundColor: colors.primarySoft,
+    borderRadius: radius.pill,
+    paddingHorizontal: spacing.md,
+    paddingVertical: 5,
+    overflow: 'hidden',
+    letterSpacing: 0.4,
   },
   insights: {
     flexDirection: 'row',
