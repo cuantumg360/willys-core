@@ -15,10 +15,10 @@ import { bcsColor, colors, gradients, radius, scoreColor, shadow, spacing, type 
 import { formatScanDate } from '@/utils/dates';
 import { deriveAlerts } from '@/utils/health';
 
-/** Color del contenedor del icono de cada escáner (solo presentación). */
-const ICON_TINT: Record<string, string> = {
-  condicion_corporal: colors.primarySoft,
-  etiqueta: colors.warnSoft,
+/** Degradado del contenedor del icono de cada escáner (solo presentación). */
+const ICON_GRADIENT: Record<string, readonly [string, string]> = {
+  condicion_corporal: gradients.good,
+  etiqueta: gradients.warn,
 };
 
 export default function Home() {
@@ -81,11 +81,14 @@ export default function Home() {
         {listScanners().map((scanner, index) => (
           <FadeIn key={scanner.id} delay={160 + index * 90}>
             <PressableScale style={styles.card} onPress={() => openScanner(scanner)}>
-              <View
-                style={[styles.cardIcon, { backgroundColor: ICON_TINT[scanner.id] ?? colors.primarySoft }]}
+              <LinearGradient
+                colors={ICON_GRADIENT[scanner.id] ?? gradients.brand}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={styles.cardIcon}
               >
                 <Text style={styles.cardEmoji}>{scanner.emoji}</Text>
-              </View>
+              </LinearGradient>
               <View style={{ flex: 1, gap: 3 }}>
                 <Text style={type.heading}>{t(scanner.titleKey)}</Text>
                 <Text style={type.small}>{t(scanner.subtitleKey)}</Text>

@@ -206,6 +206,8 @@ export const es = {
 
   // ── Historial ───────────────────────────────────────────────────────
   'history.title': 'Historial',
+  'history.count.many': '{count} escaneos guardados',
+  'history.count.one': '1 escaneo guardado',
   'history.empty.title': 'Aún no hay escaneos',
   'history.empty.body': 'Haz tu primer escaneo y aparecerá aquí, con la evolución de {name} a lo largo del tiempo.',
   'history.empty.bodyNoPet': 'Haz tu primer escaneo y aparecerá aquí.',

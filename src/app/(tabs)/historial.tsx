@@ -1,12 +1,15 @@
+import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
+import { FadeIn } from '@/components/anim/FadeIn';
+import { PetAvatar } from '@/components/PetAvatar';
 import { TrendChart } from '@/components/TrendChart';
 import { Screen } from '@/components/ui/Screen';
 import { getScanner } from '@/features/scanners/registry';
 import { t } from '@/i18n';
 import { useAppStore, usePrimaryPet } from '@/store/useAppStore';
-import { bcsColor, colors, radius, scoreColor, spacing, type } from '@/theme';
+import { bcsColor, colors, gradients, radius, scoreColor, shadow, spacing, type } from '@/theme';
 import { formatScanDate } from '@/utils/dates';
 
 export default function History() {
@@ -23,7 +26,19 @@ export default function History() {
 
   return (
     <Screen>
-      <Text style={type.title}>{t('history.title')}</Text>
+      <LinearGradient colors={gradients.hero} style={styles.hero}>
+        <PetAvatar uri={pet?.fotoUri} size={48} />
+        <View style={{ flex: 1, gap: 2 }}>
+          <Text style={type.title}>{t('history.title')}</Text>
+          {scans.length > 0 && (
+            <Text style={type.small}>
+              {scans.length === 1
+                ? t('history.count.one')
+                : t('history.count.many', { count: scans.length })}
+            </Text>
+          )}
+        </View>
+      </LinearGradient>
 
       {scans.length === 0 ? (
         <View style={styles.empty}>
@@ -36,39 +51,57 @@ export default function History() {
           </Text>
         </View>
       ) : (
-        <View style={{ gap: spacing.md, marginTop: spacing.lg }}>
+        <View style={{ gap: spacing.lg }}>
           {bcsValues.length >= 2 && pet && <TrendChart values={bcsValues} petName={pet.nombre} />}
 
-          {scans.map((scan) => {
-            const scanner = getScanner(scan.scannerId);
-            const color =
-              scan.result.tipo === 'condicion_corporal'
+          <View style={styles.timeline}>
+            {scans.map((scan, index) => {
+              const scanner = getScanner(scan.scannerId);
+              const isBcs = scan.result.tipo === 'condicion_corporal';
+              const color = isBcs
                 ? bcsColor(scan.result.puntuacion)
                 : scoreColor(scan.result.puntuacion);
-            return (
-              <Pressable
-                key={scan.id}
-                style={styles.row}
-                onPress={() => router.push(`/resultado/${scan.id}`)}
-              >
-                <Text style={styles.rowEmoji}>{scanner?.emoji ?? '🐾'}</Text>
-                <View style={{ flex: 1, gap: 2 }}>
-                  <Text style={[type.body, { fontWeight: '700' }]}>
-                    {scanner ? t(scanner.titleKey) : scan.scannerId}
-                  </Text>
-                  <Text style={type.small}>{formatScanDate(scan.createdAt)}</Text>
-                </View>
-                <Text style={[styles.rowScore, { color }]}>{scan.result.categoria}</Text>
-              </Pressable>
-            );
-          })}
+              const last = index === scans.length - 1;
+              return (
+                <FadeIn key={scan.id} delay={index * 70} offsetY={12} style={styles.row}>
+                  <View style={styles.railCol}>
+                    <View style={[styles.node, { backgroundColor: color }]}>
+                      <Text style={styles.nodeText}>{Math.round(scan.result.puntuacion)}</Text>
+                    </View>
+                    {!last && <View style={styles.rail} />}
+                  </View>
+                  <Pressable style={styles.card} onPress={() => router.push(`/resultado/${scan.id}`)}>
+                    <View style={{ flex: 1, gap: 3 }}>
+                      <Text style={styles.cardTitle}>{scanner?.emoji ?? '🐾'}  {scanner ? t(scanner.titleKey) : scan.scannerId}</Text>
+                      <Text style={type.small}>{formatScanDate(scan.createdAt)}</Text>
+                    </View>
+                    <View style={[styles.scoreTag, { backgroundColor: color }]}>
+                      <Text style={styles.scoreTagText}>{scan.result.categoria}</Text>
+                    </View>
+                  </Pressable>
+                </FadeIn>
+              );
+            })}
+          </View>
         </View>
       )}
     </Screen>
   );
 }
 
+const NODE = 44;
 const styles = StyleSheet.create({
+  hero: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
+    marginBottom: spacing.lg,
+    padding: spacing.lg,
+    borderRadius: radius.lg,
+    borderWidth: 1,
+    borderColor: colors.border,
+    ...shadow.soft,
+  },
   empty: {
     flex: 1,
     alignItems: 'center',
@@ -77,16 +110,31 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.lg,
   },
   emptyEmoji: { fontSize: 64 },
-  row: {
+  timeline: { width: '100%' },
+  row: { flexDirection: 'row', gap: spacing.md },
+  railCol: { alignItems: 'center', width: NODE },
+  node: {
+    width: NODE,
+    height: NODE,
+    borderRadius: NODE / 2,
+    alignItems: 'center',
+    justifyContent: 'center',
+    ...shadow.card,
+  },
+  nodeText: { color: colors.textOnPrimary, fontWeight: '800', fontSize: 16 },
+  rail: { flex: 1, width: 2.5, backgroundColor: colors.border, marginVertical: 4 },
+  card: {
+    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    gap: spacing.md,
+    gap: spacing.sm,
     backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: radius.md,
+    borderRadius: radius.lg,
     padding: spacing.md,
+    marginBottom: spacing.md,
+    ...shadow.card,
   },
-  rowEmoji: { fontSize: 28 },
-  rowScore: { ...type.small, fontWeight: '800' },
+  cardTitle: { ...type.body, fontWeight: '700' },
+  scoreTag: { borderRadius: radius.pill, paddingHorizontal: spacing.sm, paddingVertical: 4 },
+  scoreTagText: { color: colors.textOnPrimary, fontWeight: '800', fontSize: 12 },
 });
