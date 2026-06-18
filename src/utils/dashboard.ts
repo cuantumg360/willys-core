@@ -146,7 +146,7 @@ export function buildDashboard(
     value: vacValue,
     sub: vacSub,
     tone: vacTone,
-    route: '/salud',
+    route: '/calendario',
   };
 
   // 7. Alertas importantes

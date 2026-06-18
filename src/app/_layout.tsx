@@ -65,6 +65,17 @@ export default function RootLayout() {
             headerShadowVisible: false,
           }}
         />
+        <Stack.Screen
+          name="calendario"
+          options={{
+            headerShown: true,
+            headerTitle: '',
+            headerBackTitle: '',
+            headerTintColor: colors.primary,
+            headerStyle: { backgroundColor: colors.background },
+            headerShadowVisible: false,
+          }}
+        />
       </Stack>
     </>
   );

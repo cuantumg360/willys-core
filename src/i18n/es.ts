@@ -46,6 +46,18 @@ export const es = {
   'auth.skip': 'Continuar sin cuenta',
   'auth.skipNote': 'Podrás crear tu cuenta más tarde para guardar tus datos en la nube.',
 
+  // ── Calendario sanitario ────────────────────────────────────────────
+  'calendar.title': 'Calendario sanitario',
+  'calendar.subtitle': 'Vacunas, desparasitaciones, revisiones y medicación',
+  'calendar.upcoming': 'Próximos',
+  'calendar.history': 'Historial',
+  'calendar.empty': 'Aún no hay eventos. Añade una vacuna, desparasitación o revisión.',
+  'calendar.addReminder': 'Programar cuidado',
+  'calendar.addRecord': 'Registrar evento',
+  'calendar.entry': 'Calendario sanitario',
+  'calendar.entrySub': 'Vacunas, desparasitaciones y revisiones',
+  'calendar.done': 'Hecho',
+
   // ── Asistente IA (chat) ─────────────────────────────────────────────
   'chat.title': 'Asistente IA',
   'chat.subtitle': 'Pregunta lo que quieras sobre {name}',

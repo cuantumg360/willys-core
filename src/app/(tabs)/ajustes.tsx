@@ -104,6 +104,10 @@ export default function Settings() {
         <Row label={t('settings.sub.restore')} onPress={doRestore} />
       </Section>
 
+      <Section title={t('calendar.title')}>
+        <Row label={`🗓️ ${t('calendar.entry')}`} onPress={() => router.push('/calendario' as never)} />
+      </Section>
+
       <Section title={t('chat.title')}>
         <Row
           label={`🤖 ${t('chat.entry')}`}
