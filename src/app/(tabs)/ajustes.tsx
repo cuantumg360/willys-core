@@ -104,6 +104,14 @@ export default function Settings() {
         <Row label={t('settings.sub.restore')} onPress={doRestore} />
       </Section>
 
+      <Section title={t('chat.title')}>
+        <Row
+          label={`🤖 ${t('chat.entry')}`}
+          detail={premium ? undefined : '⭐'}
+          onPress={() => router.push('/chat' as never)}
+        />
+      </Section>
+
       <Section title={t('community.title')}>
         <Row
           label={`💬 ${t('community.entry')}`}

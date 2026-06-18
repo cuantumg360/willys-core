@@ -82,6 +82,20 @@ export default function Home() {
         </LinearGradient>
       </FadeIn>
 
+      {/* Asistente IA: característica premium destacada */}
+      <FadeIn delay={80} style={{ marginTop: spacing.lg }}>
+        <PressableScale onPress={() => router.push('/chat' as never)}>
+          <LinearGradient colors={gradients.brand} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.aiCard}>
+            <Text style={styles.aiEmoji}>🤖</Text>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.aiTitle}>{t('chat.heroTitle')}</Text>
+              <Text style={styles.aiSub}>{t('chat.heroSub')}</Text>
+            </View>
+            <Text style={styles.aiArrow}>›</Text>
+          </LinearGradient>
+        </PressableScale>
+      </FadeIn>
+
       {/* Resumen tipo panel (etiquetas): peso, objetivo, estado, nutrición… */}
       <Text style={[styles.sectionLabel, styles.section]}>{t('home.summary')}</Text>
       <View style={styles.grid}>
@@ -197,6 +211,18 @@ const styles = StyleSheet.create({
   summaryLabel: { ...type.small, fontWeight: '600', color: colors.textMuted, flex: 1 },
   summaryValue: { fontSize: 19, fontWeight: '800', color: colors.text },
   summarySub: { ...type.small, color: colors.textMuted },
+  aiCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
+    borderRadius: radius.lg,
+    padding: spacing.md,
+    ...shadow.card,
+  },
+  aiEmoji: { fontSize: 34 },
+  aiTitle: { ...type.heading, color: '#FFFFFF' },
+  aiSub: { ...type.small, color: 'rgba(255,255,255,0.85)' },
+  aiArrow: { fontSize: 26, fontWeight: '800', color: '#FFFFFF' },
   hero: {
     borderRadius: radius.lg,
     padding: spacing.lg,

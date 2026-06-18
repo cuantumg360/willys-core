@@ -46,6 +46,26 @@ export const es = {
   'auth.skip': 'Continuar sin cuenta',
   'auth.skipNote': 'Podrás crear tu cuenta más tarde para guardar tus datos en la nube.',
 
+  // ── Asistente IA (chat) ─────────────────────────────────────────────
+  'chat.title': 'Asistente IA',
+  'chat.subtitle': 'Pregunta lo que quieras sobre {name}',
+  'chat.subtitleNoPet': 'Pregunta lo que quieras sobre tu perro',
+  'chat.placeholder': 'Escribe tu pregunta…',
+  'chat.greeting': '¡Hola! 👋 Soy tu asistente para el cuidado de {name}. Puedo orientarte sobre peso, alimentación, ejercicio, vacunas o rutinas. ¿En qué te ayudo? (No sustituyo a tu veterinario.)',
+  'chat.greetingNoPet': '¡Hola! 👋 Soy tu asistente para el cuidado de tu perro. Puedo orientarte sobre peso, alimentación, ejercicio o rutinas. ¿En qué te ayudo?',
+  'chat.suggest1': '¿Cómo ayudo a {name} a estar en su peso?',
+  'chat.suggest2': '¿Cuánto ejercicio necesita al día?',
+  'chat.suggest3': '¿Qué debo mirar en su pienso?',
+  'chat.suggest1NoPet': '¿Cómo sé si está en su peso?',
+  'chat.disclaimer': 'Orientación general · no sustituye al veterinario',
+  'chat.lockedTitle': 'El Asistente IA es Premium',
+  'chat.lockedBody': 'Hazte Premium para chatear con la IA sobre la salud de tu perro siempre que quieras.',
+  'chat.lockedCta': 'Hazte Premium',
+  'chat.entry': 'Asistente IA',
+  'chat.entrySub': 'Pregúntale cualquier cosa sobre tu perro',
+  'chat.heroTitle': 'Pregúntale a la IA',
+  'chat.heroSub': 'Tu asistente de cuidado, 24/7',
+
   // ── Comunidad ───────────────────────────────────────────────────────
   'community.title': 'Comunidad',
   'community.subtitle': 'Comparte avances y aprende con otros dueños',
