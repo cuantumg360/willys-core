@@ -14,7 +14,14 @@ import { useAppStore, usePrimaryPet } from '@/store/useAppStore';
 import { colors, gradients, radius, shadow, spacing, type } from '@/theme';
 import { formatScanDate } from '@/utils/dates';
 import { bcsPercentile, buildVetReport, daysUntil, deriveAlerts, reminderStatus } from '@/utils/health';
+import { buildPredictions, PredictionLevel } from '@/utils/predictions';
 import { buildVetReportHtml } from '@/utils/vetReportHtml';
+
+const PRED_COLOR: Record<PredictionLevel, string> = {
+  info: colors.primary,
+  warn: colors.warn,
+  bad: colors.bad,
+};
 
 const SEVERITY_COLOR = { bad: colors.bad, warn: colors.warn, info: colors.primary } as const;
 
@@ -58,6 +65,7 @@ export default function Salud() {
   const petRecords = healthRecords.filter((r) => r.petId === pet.id);
   const petReminders = reminders.filter((r) => r.petId === pet.id);
   const alerts = deriveAlerts(pet, scans, petReminders);
+  const predictions = buildPredictions(pet, scans, healthRecords);
 
   const weightValues = petRecords
     .filter((r) => r.kind === 'peso' && typeof r.weightKg === 'number')
@@ -157,6 +165,23 @@ export default function Salud() {
           variant="secondary"
           onPress={() => router.push('/registro?kind=peso')}
         />
+      </View>
+
+      {/* Predicción de salud */}
+      <View style={styles.card}>
+        <View style={{ gap: 2 }}>
+          <Text style={styles.cardTitle}>{t('salud.prediction.title')}</Text>
+          <Text style={type.small}>{t('salud.prediction.sub', { name: pet.nombre })}</Text>
+        </View>
+        {predictions.map((p) => (
+          <View key={p.id} style={[styles.prediction, { borderLeftColor: PRED_COLOR[p.level] }]}>
+            <Text style={styles.predEmoji}>{p.emoji}</Text>
+            <View style={{ flex: 1, gap: 2 }}>
+              <Text style={[type.body, { fontWeight: '700' }]}>{p.title}</Text>
+              <Text style={type.small}>{p.body}</Text>
+            </View>
+          </View>
+        ))}
       </View>
 
       {/* Comparativa con perros similares */}
@@ -276,6 +301,15 @@ const styles = StyleSheet.create({
   addLink: { ...type.body, color: colors.primary, fontWeight: '700' },
   alertRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
   alertDot: { width: 10, height: 10, borderRadius: 5 },
+  prediction: {
+    flexDirection: 'row',
+    gap: spacing.sm,
+    backgroundColor: colors.surfaceMuted,
+    borderRadius: radius.md,
+    borderLeftWidth: 4,
+    padding: spacing.md,
+  },
+  predEmoji: { fontSize: 22 },
   weightRow: { flexDirection: 'row', alignItems: 'flex-end', gap: spacing.xs },
   weightValue: { fontSize: 40, fontWeight: '800', color: colors.text },
   weightUnit: { fontSize: 18, fontWeight: '700', color: colors.textMuted, marginBottom: 6 },

@@ -309,6 +309,8 @@ export const es = {
   'salud.titleNoPet': 'Salud',
   'salud.empty': 'Añade una mascota para ver su salud.',
   'salud.alerts': 'Alertas',
+  'salud.prediction.title': 'Predicción de salud',
+  'salud.prediction.sub': 'Lo que detectamos en la evolución de {name}',
   'salud.noAlerts': 'Todo en orden, sin alertas. 🎉',
   'salud.weight.title': 'Peso',
   'salud.weight.current': 'Peso actual',
