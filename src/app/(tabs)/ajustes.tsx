@@ -106,17 +106,29 @@ export default function Settings() {
         <Row label={t('settings.sub.restore')} onPress={doRestore} />
       </Section>
 
+      <Section title={t('community.title')}>
+        <Row
+          label={`💬 ${t('community.entry')}`}
+          detail={premium ? undefined : '⭐'}
+          onPress={() => router.push('/comunidad' as never)}
+        />
+      </Section>
+
       <Section title={t('settings.account.section')}>
         {userEmail ? (
-          <View style={styles.row}>
-            <Text style={styles.emailIcon}>👤</Text>
-            <Text style={[type.body, { flex: 1 }]} numberOfLines={1}>
-              {userEmail}
-            </Text>
-          </View>
-        ) : null}
-        <Row label={t('auth.signOut')} onPress={confirmSignOut} />
-        <Row label={t('auth.deleteAccount')} destructive onPress={confirmDeleteAccount} />
+          <>
+            <View style={styles.row}>
+              <Text style={styles.emailIcon}>👤</Text>
+              <Text style={[type.body, { flex: 1 }]} numberOfLines={1}>
+                {userEmail}
+              </Text>
+            </View>
+            <Row label={t('auth.signOut')} onPress={confirmSignOut} />
+            <Row label={t('auth.deleteAccount')} destructive onPress={confirmDeleteAccount} />
+          </>
+        ) : (
+          <Row label={t('settings.account.login')} onPress={() => router.push('/auth')} />
+        )}
       </Section>
       <Text style={[type.small, styles.syncNote]}>
         {cloud.enabled() ? t('settings.sync.cloud') : t('settings.sync.local')}

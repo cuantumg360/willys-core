@@ -18,7 +18,8 @@ export type AnalyticsEvent =
   | 'paywall_cerrado'
   | 'trial_iniciado'
   | 'compra_realizada'
-  | 'compra_restaurada';
+  | 'compra_restaurada'
+  | 'comunidad_post_creado';
 
 export function track(event: AnalyticsEvent, props?: Record<string, string | number | boolean>) {
   if (__DEV__) {

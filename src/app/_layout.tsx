@@ -43,6 +43,17 @@ export default function RootLayout() {
             headerShadowVisible: false,
           }}
         />
+        <Stack.Screen
+          name="comunidad"
+          options={{
+            headerShown: true,
+            headerTitle: '',
+            headerBackTitle: '',
+            headerTintColor: colors.primary,
+            headerStyle: { backgroundColor: colors.background },
+            headerShadowVisible: false,
+          }}
+        />
       </Stack>
     </>
   );

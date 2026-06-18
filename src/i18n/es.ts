@@ -46,6 +46,20 @@ export const es = {
   'auth.skip': 'Continuar sin cuenta',
   'auth.skipNote': 'Podrás crear tu cuenta más tarde para guardar tus datos en la nube.',
 
+  // ── Comunidad ───────────────────────────────────────────────────────
+  'community.title': 'Comunidad',
+  'community.subtitle': 'Comparte avances y aprende con otros dueños',
+  'community.you': 'Tú',
+  'community.composerPlaceholder': 'Comparte algo con la comunidad…',
+  'community.publish': 'Publicar',
+  'community.empty': 'Sé el primero en publicar.',
+  'community.guideline': 'Sé amable y respetuoso. La comunidad no sustituye al veterinario.',
+  'community.lockedTitle': 'La comunidad es para suscriptores',
+  'community.lockedBody': 'Hazte Premium para hablar con otros dueños, compartir los avances de tu perro y resolver dudas.',
+  'community.lockedCta': 'Hazte Premium',
+  'community.entry': 'Comunidad',
+  'community.entrySub': 'Habla con otros dueños',
+
   // ── Onboarding ───────────────────────────────────────────────────────
   'ob.hook.badge': '🐾 El cuidado empieza aquí',
   'ob.hook.title': 'La mitad de los perros tiene sobrepeso…',
@@ -298,6 +312,7 @@ export const es = {
   'settings.sub.inactive': 'Hazte premium',
   'settings.sub.restore': 'Restaurar compras',
   'settings.account.section': 'Cuenta',
+  'settings.account.login': 'Iniciar sesión o crear cuenta',
   'settings.sync.cloud': '☁️ Sincronizado con tu cuenta',
   'settings.sync.local': '📱 Guardado en este dispositivo',
   'settings.data.section': 'Datos y privacidad',
