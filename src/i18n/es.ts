@@ -151,6 +151,9 @@ export const es = {
   'home.scansLeft.none': 'Has usado tus escaneos gratis',
   'home.premium': 'Premium',
   'home.lastScan': 'Último escaneo',
+  'home.streak.label': 'racha',
+  'home.streak.days': '{days} días',
+  'home.streak.one': '1 día',
 
   // ── Escáner: condición corporal ─────────────────────────────────────
   'scanner.bcs.title': '¿Está en su peso?',

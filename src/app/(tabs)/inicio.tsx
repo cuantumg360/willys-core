@@ -13,7 +13,7 @@ import { usePurchases } from '@/services/purchases';
 import { freeScansLeft, useAppStore, usePrimaryPet } from '@/store/useAppStore';
 import { bcsColor, colors, gradients, radius, scoreColor, shadow, spacing, type } from '@/theme';
 import { formatScanDate } from '@/utils/dates';
-import { deriveAlerts } from '@/utils/health';
+import { careStreak, deriveAlerts } from '@/utils/health';
 
 /** Degradado del contenedor del icono de cada escáner (solo presentación). */
 const ICON_GRADIENT: Record<string, readonly [string, string]> = {
@@ -27,9 +27,11 @@ export default function Home() {
   const freeScansUsed = useAppStore((s) => s.freeScansUsed);
   const scans = useAppStore((s) => s.scans);
   const reminders = useAppStore((s) => s.reminders);
+  const healthRecords = useAppStore((s) => s.healthRecords);
   const lastScan = scans[0];
 
   const alerts = deriveAlerts(pet, scans, reminders);
+  const streak = careStreak(scans, healthRecords);
   const canScan = premium || freeScansLeft(freeScansUsed) > 0;
 
   const openScanner = (scanner: ScannerConfig) => {
@@ -56,6 +58,15 @@ export default function Home() {
                   : t('home.greetingNoPetTitle')}
               </Text>
             </View>
+            {streak > 0 && (
+              <View style={styles.streak}>
+                <Text style={styles.streakFlame}>🔥</Text>
+                <Text style={styles.streakDays}>
+                  {streak === 1 ? t('home.streak.one') : t('home.streak.days', { days: streak })}
+                </Text>
+                <Text style={styles.streakLabel}>{t('home.streak.label')}</Text>
+              </View>
+            )}
           </View>
           <View style={{ marginTop: spacing.md }}>
             <ScanCounter />
@@ -157,6 +168,18 @@ const styles = StyleSheet.create({
   alertEmoji: { fontSize: 18 },
   eyebrow: { ...type.small, fontWeight: '600', color: colors.textMuted },
   greeting: { fontSize: 23, fontWeight: '800', lineHeight: 28, color: colors.text },
+  streak: {
+    alignItems: 'center',
+    backgroundColor: colors.surface,
+    borderRadius: radius.md,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: 6,
+    minWidth: 58,
+    ...shadow.soft,
+  },
+  streakFlame: { fontSize: 18 },
+  streakDays: { ...type.small, fontWeight: '800', color: colors.text },
+  streakLabel: { fontSize: 10, color: colors.textMuted, textTransform: 'uppercase', letterSpacing: 0.4 },
   sectionLabel: { ...type.heading, letterSpacing: 0.2 },
   section: { marginTop: spacing.xl, marginBottom: spacing.md },
   card: {

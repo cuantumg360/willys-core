@@ -14,6 +14,37 @@ export type ReminderStatus = 'overdue' | 'today' | 'soon' | 'upcoming';
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
+/** Clave local YYYY-MM-DD de una fecha ISO (en horario del dispositivo). */
+function dayKey(d: Date): string {
+  return `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
+}
+
+/**
+ * Racha de cuidado: nº de días consecutivos (hasta hoy o ayer) con alguna
+ * actividad (escaneo o registro de salud). No se rompe solo porque hoy aún
+ * no haya actividad: cuenta desde ayer si hoy está vacío.
+ */
+export function careStreak(scans: ScanRecord[], records: HealthRecord[]): number {
+  const days = new Set<string>();
+  scans.forEach((s) => days.add(dayKey(new Date(s.createdAt))));
+  records.forEach((r) => days.add(dayKey(new Date(r.date))));
+  if (days.size === 0) return 0;
+
+  const cursor = new Date();
+  cursor.setHours(0, 0, 0, 0);
+  // Si hoy no hay actividad pero ayer sí, empezamos a contar desde ayer.
+  if (!days.has(dayKey(cursor))) {
+    cursor.setTime(cursor.getTime() - DAY_MS);
+    if (!days.has(dayKey(cursor))) return 0;
+  }
+  let streak = 0;
+  while (days.has(dayKey(cursor))) {
+    streak += 1;
+    cursor.setTime(cursor.getTime() - DAY_MS);
+  }
+  return streak;
+}
+
 /** Días hasta el vencimiento (negativo si ya venció). */
 export function daysUntil(iso: string): number {
   const start = new Date();
