@@ -8,7 +8,7 @@ import { colors, gradients, radius, spacing, type } from '@/theme';
 interface Props {
   label: string;
   onPress: () => void;
-  variant?: 'primary' | 'secondary' | 'ghost';
+  variant?: 'primary' | 'secondary' | 'ghost' | 'light';
   disabled?: boolean;
   loading?: boolean;
   style?: ViewStyle;
@@ -77,5 +77,13 @@ const styles = StyleSheet.create({
   },
   secondary: { backgroundColor: colors.primarySoft },
   ghost: { backgroundColor: 'transparent' },
+  light: {
+    backgroundColor: colors.surface,
+    shadowColor: '#000',
+    shadowOpacity: 0.18,
+    shadowRadius: 14,
+    shadowOffset: { width: 0, height: 8 },
+    elevation: 6,
+  },
   disabled: { opacity: 0.45 },
 });

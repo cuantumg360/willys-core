@@ -51,7 +51,9 @@ export const es = {
   'ob.hook.stat': '1 de cada 2 perros',
   'ob.hook.statCaption': 'tiene sobrepeso sin que su familia lo sepa',
 
+  'ob.how.eyebrow': 'En 3 pasos',
   'ob.how.title': 'Así de fácil',
+  'ob.how.stepLabel': 'Paso {n}',
   'ob.how.step1.title': 'Haz una foto',
   'ob.how.step1.desc': 'A tu perro o a la etiqueta de su comida.',
   'ob.how.step2.title': 'La IA la analiza',
