@@ -14,7 +14,14 @@ import { PlanId, usePurchases } from '@/services/purchases';
 import { useAppStore, usePrimaryPet } from '@/store/useAppStore';
 import { colors, gradients, radius, shadow, spacing, type } from '@/theme';
 
-const BULLETS = ['paywall.bullet1', 'paywall.bullet2', 'paywall.bullet3'] as const;
+const FEATURES = [
+  { emoji: '🔍', titleKey: 'paywall.f1.t', subKey: 'paywall.f1.s' },
+  { emoji: '💬', titleKey: 'paywall.f2.t', subKey: 'paywall.f2.s' },
+  { emoji: '🐕', titleKey: 'paywall.f3.t', subKey: 'paywall.f3.s' },
+  { emoji: '📄', titleKey: 'paywall.f4.t', subKey: undefined },
+  { emoji: '📈', titleKey: 'paywall.f5.t', subKey: 'paywall.f5.s' },
+  { emoji: '🔔', titleKey: 'paywall.f6.t', subKey: 'paywall.f6.s' },
+] as const;
 
 /**
  * Paywall único (final del onboarding y al agotar escaneos gratis).
@@ -96,14 +103,21 @@ export default function Paywall() {
         <Text style={[type.title, { textAlign: 'center' }]}>
           {pet?.nombre ? t('paywall.title', { name: pet.nombre }) : t('paywall.titleNoName')}
         </Text>
-        <View style={styles.bullets}>
-          {BULLETS.map((key, index) => (
-            <FadeIn key={key} delay={160 + index * 90} style={styles.bullet}>
-              <Text style={styles.check}>✓</Text>
-              <Text style={[type.body, { flex: 1 }]}>{t(key)}</Text>
-            </FadeIn>
-          ))}
-        </View>
+      </FadeIn>
+
+      {/* Qué incluye Premium: lista clara y específica */}
+      <FadeIn delay={160} style={styles.featuresCard}>
+        <Text style={styles.featuresTitle}>{t('paywall.includesTitle')}</Text>
+        {FEATURES.map((f, index) => (
+          <FadeIn key={f.titleKey} delay={220 + index * 70} style={styles.featureRow}>
+            <Text style={styles.featureEmoji}>{f.emoji}</Text>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.featureTitle}>{t(f.titleKey)}</Text>
+              {f.subKey ? <Text style={type.small}>{t(f.subKey)}</Text> : null}
+            </View>
+            <Text style={styles.featureCheck}>✓</Text>
+          </FadeIn>
+        ))}
       </FadeIn>
 
       {/* Anclaje de valor: lo que costaría por separado (~200€) vs 39,99€ */}
@@ -284,11 +298,31 @@ const styles = StyleSheet.create({
   valueYouLabel: { ...type.heading, color: colors.primaryDark, flex: 1 },
   valueYouPrice: { fontSize: 26, fontWeight: '800', color: colors.primary },
   planPriceBig: { fontSize: 22, fontWeight: '800', color: colors.text },
-  top: { alignItems: 'center', gap: spacing.lg, marginTop: spacing.xl },
+  top: { alignItems: 'center', gap: spacing.md, marginTop: spacing.xl },
   emoji: { fontSize: 52 },
-  bullets: { gap: spacing.sm, width: '100%' },
-  bullet: { flexDirection: 'row', gap: spacing.sm, alignItems: 'center' },
-  check: { color: colors.primary, fontWeight: '800', fontSize: 17 },
+  featuresCard: {
+    backgroundColor: colors.surface,
+    borderRadius: radius.lg,
+    padding: spacing.lg,
+    gap: spacing.md,
+    ...shadow.card,
+  },
+  featuresTitle: { ...type.heading },
+  featureRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.md },
+  featureEmoji: { fontSize: 24, width: 30, textAlign: 'center' },
+  featureTitle: { ...type.body, fontWeight: '700' },
+  featureCheck: {
+    color: colors.primary,
+    fontWeight: '900',
+    fontSize: 16,
+    backgroundColor: colors.primarySoft,
+    width: 26,
+    height: 26,
+    borderRadius: 13,
+    textAlign: 'center',
+    lineHeight: 26,
+    overflow: 'hidden',
+  },
   plan: {
     flexDirection: 'row',
     alignItems: 'center',
