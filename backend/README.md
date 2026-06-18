@@ -54,7 +54,8 @@ Pendiente (siguiente refinamiento):
 # Backend de análisis de imágenes (IA de visión real)
 
 Ya implementado como **Supabase Edge Function** en
-`backend/supabase/functions/analyze/index.ts`. Hace de proxy entre la app y
+`supabase/functions/analyze/index.ts` (carpeta estándar de Supabase, en la
+raíz del proyecto). Hace de proxy entre la app y
 **Claude Sonnet 4.6 con visión** (Anthropic; equilibrio calidad/coste — se
 cambia en la constante `MODEL` de la función). **La API key del modelo vive solo
 aquí, nunca en el cliente**, y la salida es JSON garantizado por esquema
@@ -72,10 +73,12 @@ aquí, nunca en el cliente**, y la salida es JSON garantizado por esquema
    ```bash
    supabase secrets set ANTHROPIC_API_KEY=sk-ant-...
    ```
-3. Despliega la función:
+3. Despliega la función (`--use-api` compila en la nube, sin Docker):
    ```bash
-   supabase functions deploy analyze --no-verify-jwt
+   supabase functions deploy analyze --no-verify-jwt --use-api
    ```
+   > El proyecto Supabase debe estar **activo** (no pausado): si está en
+   > pausa, reactívalo en el panel antes de desplegar.
 4. En la app, en `.env`, apunta al backend (el cliente añade `/analyze`):
    ```
    EXPO_PUBLIC_BACKEND_URL=https://TU_PROJECT_REF.supabase.co/functions/v1
