@@ -8,6 +8,7 @@ import { FadeIn } from '@/components/anim/FadeIn';
 import { Disclaimer, VetBanner } from '@/components/result/Banners';
 import { BodyMap } from '@/components/result/BodyMap';
 import { DetailRow } from '@/components/result/DetailRow';
+import { Dog3D } from '@/components/result/Dog3D';
 import { Gauge } from '@/components/result/Gauge';
 import { ScoreBar } from '@/components/result/ScoreBar';
 import { ShareCard } from '@/components/result/ShareCard';
@@ -116,6 +117,13 @@ export default function Result() {
       <FadeIn offsetY={6} style={{ alignItems: 'center', gap: spacing.xs, marginBottom: spacing.md }}>
         <Text style={styles.analyzedBadge}>✓ {t('result.analyzed')}</Text>
       </FadeIn>
+
+      {/* Modelo 3D interactivo: la pieza estrella (solo BCS) */}
+      {isBcs && (
+        <FadeIn offsetY={10} style={{ marginBottom: spacing.lg }}>
+          <Dog3D bcs={result.puntuacion} />
+        </FadeIn>
+      )}
 
       {/* Mapa corporal interactivo sobre la FOTO REAL del perro (solo BCS) */}
       {isBcs && (
