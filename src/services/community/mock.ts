@@ -42,6 +42,7 @@ export async function create(input: NewPost): Promise<CommunityPost> {
     authorName: input.authorName,
     petName: input.petName,
     text: input.text,
+    imageUri: input.imageUri,
     createdAt: new Date().toISOString(),
     likes: 0,
   };

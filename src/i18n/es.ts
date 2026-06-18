@@ -51,6 +51,7 @@ export const es = {
   'community.subtitle': 'Comparte avances y aprende con otros dueños',
   'community.you': 'Tú',
   'community.composerPlaceholder': 'Comparte algo con la comunidad…',
+  'community.addPhoto': 'Foto',
   'community.publish': 'Publicar',
   'community.empty': 'Sé el primero en publicar.',
   'community.guideline': 'Sé amable y respetuoso. La comunidad no sustituye al veterinario.',

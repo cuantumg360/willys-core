@@ -72,8 +72,6 @@ export default function Settings() {
     ]);
   };
 
-  // Ver el tutorial otra vez (no borra datos; al terminar vuelve a inicio).
-  const replayTutorial = () => router.push('/onboarding');
 
   return (
     <Screen floatingTabBar>
@@ -135,7 +133,6 @@ export default function Settings() {
       </Text>
 
       <Section title={t('settings.data.section')}>
-        <Row label={t('settings.account.tutorial')} onPress={replayTutorial} />
         <Row label={t('settings.account.deleteData')} destructive onPress={confirmDeleteData} />
       </Section>
 

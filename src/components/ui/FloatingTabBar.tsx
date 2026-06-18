@@ -11,6 +11,42 @@ import { usePurchases } from '@/services/purchases';
 import { freeScansLeft, useAppStore } from '@/store/useAppStore';
 import { colors, gradients, shadow, spacing, type } from '@/theme';
 
+// Liquid Glass real (iOS 26) si está disponible; si no (Expo Go / iOS antiguo),
+// respaldo con BlurView (cristal esmerilado). Carga segura: nunca rompe.
+/* eslint-disable @typescript-eslint/no-require-imports */
+let GlassViewComp: any;
+let BlurViewComp: any;
+let LIQUID = false;
+try {
+  const g = require('expo-glass-effect');
+  GlassViewComp = g.GlassView;
+  LIQUID = typeof g.isLiquidGlassAvailable === 'function' ? g.isLiquidGlassAvailable() : false;
+} catch {
+  /* no disponible */
+}
+try {
+  BlurViewComp = require('expo-blur').BlurView;
+} catch {
+  /* no disponible */
+}
+/* eslint-enable @typescript-eslint/no-require-imports */
+
+/** Fondo "cristal" de la barra: Liquid Glass → Blur → sólido translúcido. */
+function GlassBackground() {
+  if (LIQUID && GlassViewComp) {
+    return <GlassViewComp glassEffectStyle="regular" style={StyleSheet.absoluteFill} />;
+  }
+  if (BlurViewComp) {
+    return (
+      <>
+        <BlurViewComp intensity={36} tint="light" style={StyleSheet.absoluteFill} />
+        <View style={styles.glassTint} pointerEvents="none" />
+      </>
+    );
+  }
+  return <View style={styles.glassSolid} pointerEvents="none" />;
+}
+
 interface TabDef {
   name: string;
   symbol: string;
@@ -69,8 +105,10 @@ export function FloatingTabBar({ state, navigation }: BottomTabBarProps) {
 
   return (
     <View style={[styles.wrap, { paddingBottom: insets.bottom + spacing.sm }]} pointerEvents="box-none">
-      <View style={styles.pill}>
-        {LEFT.map(renderTab)}
+      <View style={styles.shadowWrap}>
+        <View style={styles.pill}>
+          <GlassBackground />
+          {LEFT.map(renderTab)}
 
         <View style={styles.fabSlot}>
           <Pressable onPress={scan} style={styles.fabPress} hitSlop={8}>
@@ -81,7 +119,8 @@ export function FloatingTabBar({ state, navigation }: BottomTabBarProps) {
           </Pressable>
         </View>
 
-        {RIGHT.map(renderTab)}
+          {RIGHT.map(renderTab)}
+        </View>
       </View>
     </View>
   );
@@ -96,22 +135,28 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: spacing.lg,
   },
+  shadowWrap: {
+    width: '100%',
+    borderRadius: 30,
+    shadowColor: '#000',
+    shadowOpacity: 0.14,
+    shadowRadius: 20,
+    shadowOffset: { width: 0, height: 10 },
+    elevation: 14,
+  },
   pill: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: colors.surface,
     borderRadius: 30,
     paddingHorizontal: spacing.sm,
     height: 66,
     width: '100%',
+    overflow: 'hidden',
     borderWidth: 1,
-    borderColor: colors.border,
-    shadowColor: '#000',
-    shadowOpacity: 0.12,
-    shadowRadius: 18,
-    shadowOffset: { width: 0, height: 8 },
-    elevation: 12,
+    borderColor: 'rgba(255,255,255,0.55)',
   },
+  glassTint: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(255,255,255,0.45)' },
+  glassSolid: { ...StyleSheet.absoluteFillObject, backgroundColor: colors.surface },
   tab: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 3 },
   label: { ...type.small, fontSize: 11, fontWeight: '700' },
   fabSlot: { width: 74, alignItems: 'center' },

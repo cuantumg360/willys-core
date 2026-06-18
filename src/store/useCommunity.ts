@@ -10,7 +10,12 @@ interface CommunityState {
   error?: string;
 
   load: () => Promise<void>;
-  publish: (input: { authorName: string; petName?: string; text: string }) => Promise<boolean>;
+  publish: (input: {
+    authorName: string;
+    petName?: string;
+    text: string;
+    imageUri?: string;
+  }) => Promise<boolean>;
   toggleLike: (id: string) => void;
 }
 
@@ -30,18 +35,34 @@ export const useCommunity = create<CommunityState>((set, get) => ({
     }
   },
 
-  publish: async ({ authorName, petName, text }) => {
+  publish: async ({ authorName, petName, text, imageUri }) => {
     const clean = text.trim();
-    if (!clean) return false;
+    if (!clean && !imageUri) return false;
+    // Optimista: el post aparece al instante (siempre funciona, también en
+    // Expo Go). Si hay backend, se intenta guardar y se reconcilia el id.
+    const tempId = `temp-${Date.now()}`;
+    const optimistic: CommunityPost = {
+      id: tempId,
+      authorName,
+      petName,
+      text: clean,
+      imageUri,
+      createdAt: new Date().toISOString(),
+      likes: 0,
+    };
+    set((s) => ({ posts: [optimistic, ...s.posts], error: undefined }));
     try {
-      const post = await community.create({ authorName, petName, text: clean });
-      set((s) => ({ posts: [post, ...s.posts] }));
-      track('comunidad_post_creado');
-      return true;
+      const saved = await community.create({ authorName, petName, text: clean, imageUri });
+      set((s) => ({
+        posts: s.posts.map((p) =>
+          p.id === tempId ? { ...saved, imageUri: saved.imageUri ?? imageUri } : p,
+        ),
+      }));
     } catch {
-      set({ error: 'No hemos podido publicar. Inténtalo de nuevo.' });
-      return false;
+      // Se queda el post local (mejor esfuerzo); no bloquea al usuario.
     }
+    track('comunidad_post_creado');
+    return true;
   },
 
   toggleLike: (id) => {

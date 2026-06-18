@@ -1,3 +1,5 @@
+import { Image } from 'expo-image';
+import * as ImagePicker from 'expo-image-picker';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
@@ -30,9 +32,20 @@ export default function Comunidad() {
   const toggleLike = useCommunity((s) => s.toggleLike);
 
   const [text, setText] = useState('');
+  const [imageUri, setImageUri] = useState<string | undefined>();
   const [sending, setSending] = useState(false);
 
   const authorName = user?.email ? user.email.split('@')[0] : t('community.you');
+
+  const pickImage = async () => {
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ['images'],
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 0.7,
+    });
+    if (!result.canceled && result.assets[0]?.uri) setImageUri(result.assets[0].uri);
+  };
 
   useEffect(() => {
     if (premium && !loaded) load();
@@ -58,9 +71,12 @@ export default function Comunidad() {
 
   const send = async () => {
     setSending(true);
-    const ok = await publish({ authorName, petName: pet?.nombre, text });
+    const ok = await publish({ authorName, petName: pet?.nombre, text, imageUri });
     setSending(false);
-    if (ok) setText('');
+    if (ok) {
+      setText('');
+      setImageUri(undefined);
+    }
   };
 
   return (
@@ -80,16 +96,25 @@ export default function Comunidad() {
           onChangeText={(v) => setText(v.slice(0, MAX_LEN))}
           multiline
         />
+        {imageUri && (
+          <View style={styles.previewWrap}>
+            <Image source={{ uri: imageUri }} style={styles.preview} contentFit="cover" />
+            <Pressable style={styles.previewRemove} onPress={() => setImageUri(undefined)} hitSlop={8}>
+              <Text style={styles.previewRemoveText}>✕</Text>
+            </Pressable>
+          </View>
+        )}
         <View style={styles.composerFoot}>
-          <Text style={type.small}>
-            {text.length}/{MAX_LEN}
-          </Text>
+          <Pressable style={styles.photoBtn} onPress={pickImage} hitSlop={8}>
+            <Icon symbol="photo" emoji="📷" size={18} color={colors.primary} />
+            <Text style={styles.photoBtnText}>{t('community.addPhoto')}</Text>
+          </Pressable>
           <Button
             label={t('community.publish')}
             onPress={send}
             loading={sending}
-            disabled={!text.trim()}
-            style={{ minWidth: 130 }}
+            disabled={!text.trim() && !imageUri}
+            style={{ minWidth: 120 }}
           />
         </View>
       </View>
@@ -119,7 +144,12 @@ export default function Comunidad() {
                   <Text style={type.small}>{formatScanDate(post.createdAt)}</Text>
                 </View>
               </View>
-              <Text style={[type.body, { marginTop: spacing.sm }]}>{post.text}</Text>
+              {post.text ? (
+                <Text style={[type.body, { marginTop: spacing.sm }]}>{post.text}</Text>
+              ) : null}
+              {post.imageUri ? (
+                <Image source={{ uri: post.imageUri }} style={styles.postImage} contentFit="cover" />
+              ) : null}
               <Pressable style={styles.likeRow} onPress={() => toggleLike(post.id)} hitSlop={8}>
                 <Icon
                   symbol={post.likedByMe ? 'heart.fill' : 'heart'}
@@ -157,6 +187,23 @@ const styles = StyleSheet.create({
     ...shadow.card,
   },
   input: { ...type.body, minHeight: 64, textAlignVertical: 'top' },
+  previewWrap: { position: 'relative' },
+  preview: { width: '100%', height: 180, borderRadius: radius.md },
+  previewRemove: {
+    position: 'absolute',
+    top: spacing.sm,
+    right: spacing.sm,
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: 'rgba(0,0,0,0.55)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  previewRemoveText: { color: '#fff', fontWeight: '800', fontSize: 13 },
+  photoBtn: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  photoBtnText: { ...type.body, color: colors.primary, fontWeight: '700' },
+  postImage: { width: '100%', height: 200, borderRadius: radius.md, marginTop: spacing.sm },
   composerFoot: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   guideline: { ...type.small, textAlign: 'center', marginTop: spacing.sm },
   post: {
