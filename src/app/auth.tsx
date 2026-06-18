@@ -109,6 +109,18 @@ export default function Auth() {
           </Pressable>
         </FadeIn>
 
+        {/* La cuenta es opcional: en el onboarding se puede continuar sin ella. */}
+        {fromOnboarding && (
+          <FadeIn delay={300} style={styles.skipBlock}>
+            <Button
+              label={t('auth.skip')}
+              variant="ghost"
+              onPress={() => router.replace('/paywall?context=onboarding')}
+            />
+            <Text style={styles.skipNote}>{t('auth.skipNote')}</Text>
+          </FadeIn>
+        )}
+
         <Text style={styles.legal}>{t('auth.legalNote')}</Text>
       </Screen>
     </KeyboardAvoidingView>
@@ -127,5 +139,7 @@ const styles = StyleSheet.create({
   error: { ...type.small, color: colors.bad, fontWeight: '600' },
   toggle: { alignItems: 'center', paddingTop: spacing.xs },
   toggleText: { ...type.body, color: colors.primary, fontWeight: '600' },
+  skipBlock: { marginTop: spacing.md, gap: spacing.xs },
+  skipNote: { ...type.small, textAlign: 'center' },
   legal: { ...type.small, textAlign: 'center', marginTop: spacing.lg },
 });

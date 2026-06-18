@@ -43,6 +43,8 @@ export const es = {
   'auth.signOutTitle': '¿Cerrar sesión?',
   'auth.signOutBody': 'Podrás volver a entrar con tu email y contraseña cuando quieras.',
   'auth.section': 'Cuenta',
+  'auth.skip': 'Continuar sin cuenta',
+  'auth.skipNote': 'Podrás crear tu cuenta más tarde para guardar tus datos en la nube.',
 
   // ── Onboarding ───────────────────────────────────────────────────────
   'ob.hook.badge': '🐾 El cuidado empieza aquí',
