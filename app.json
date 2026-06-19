@@ -54,7 +54,8 @@
         {
           "photosPermission": "Te permitimos elegir una foto de tu galería para analizarla."
         }
-      ]
+      ],
+      "expo-font"
     ],
     "experiments": {
       "typedRoutes": true,

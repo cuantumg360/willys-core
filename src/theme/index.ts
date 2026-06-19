@@ -86,17 +86,17 @@ export const gradients = {
 } as const;
 
 /**
- * Una sola fuente: la del sistema con pesos marcados.
- * TODO diseño: sustituir por una redondeada (p. ej. Nunito) vía expo-font.
+ * Tipografía con Nunito (cargada en theme/fonts.ts). Cada token fija la
+ * variante de peso exacta para que se renderice nítida en iOS y Android.
  */
 export const type = {
-  hero: { fontSize: 32, fontWeight: '800', lineHeight: 38, color: colors.text } as TextStyle,
-  title: { fontSize: 24, fontWeight: '800', lineHeight: 30, color: colors.text } as TextStyle,
-  heading: { fontSize: 18, fontWeight: '700', lineHeight: 24, color: colors.text } as TextStyle,
-  body: { fontSize: 16, fontWeight: '400', lineHeight: 23, color: colors.text } as TextStyle,
-  bodyMuted: { fontSize: 16, fontWeight: '400', lineHeight: 23, color: colors.textMuted } as TextStyle,
-  small: { fontSize: 13, fontWeight: '400', lineHeight: 18, color: colors.textMuted } as TextStyle,
-  button: { fontSize: 17, fontWeight: '700', color: colors.textOnPrimary } as TextStyle,
+  hero: { fontFamily: 'Nunito_800ExtraBold', fontSize: 32, fontWeight: '800', lineHeight: 38, color: colors.text } as TextStyle,
+  title: { fontFamily: 'Nunito_800ExtraBold', fontSize: 24, fontWeight: '800', lineHeight: 30, color: colors.text } as TextStyle,
+  heading: { fontFamily: 'Nunito_700Bold', fontSize: 18, fontWeight: '700', lineHeight: 24, color: colors.text } as TextStyle,
+  body: { fontFamily: 'Nunito_500Medium', fontSize: 16, fontWeight: '400', lineHeight: 23, color: colors.text } as TextStyle,
+  bodyMuted: { fontFamily: 'Nunito_500Medium', fontSize: 16, fontWeight: '400', lineHeight: 23, color: colors.textMuted } as TextStyle,
+  small: { fontFamily: 'Nunito_600SemiBold', fontSize: 13, fontWeight: '400', lineHeight: 18, color: colors.textMuted } as TextStyle,
+  button: { fontFamily: 'Nunito_800ExtraBold', fontSize: 17, fontWeight: '700', color: colors.textOnPrimary } as TextStyle,
 } as const;
 
 /** Color de semáforo para una nota 0-100. */

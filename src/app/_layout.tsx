@@ -1,4 +1,5 @@
 import { Stack } from 'expo-router';
+import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 
@@ -6,14 +7,27 @@ import { track } from '@/services/analytics';
 import { usePurchases } from '@/services/purchases';
 import { useAuth } from '@/store/useAuth';
 import { colors } from '@/theme';
+import { useAppFonts } from '@/theme/fonts';
+
+// Mantén el splash hasta que las fuentes estén listas (evita un parpadeo con
+// la fuente del sistema antes de Nunito).
+SplashScreen.preventAutoHideAsync().catch(() => {});
 
 export default function RootLayout() {
+  const fontsLoaded = useAppFonts();
+
   useEffect(() => {
     track('app_abierta');
     // Carga la sesión (login) y el estado premium (compras) al arrancar.
     useAuth.getState().init();
     usePurchases.getState().init();
   }, []);
+
+  useEffect(() => {
+    if (fontsLoaded) SplashScreen.hideAsync().catch(() => {});
+  }, [fontsLoaded]);
+
+  if (!fontsLoaded) return null;
 
   return (
     <>
