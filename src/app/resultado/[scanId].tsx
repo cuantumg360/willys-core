@@ -2,7 +2,8 @@ import * as Haptics from 'expo-haptics';
 import { Image } from 'expo-image';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useRef } from 'react';
-import { Alert, StyleSheet, Text, View } from 'react-native';
+import { Alert, Dimensions, StyleSheet, Text, View } from 'react-native';
+import ConfettiCannon from 'react-native-confetti-cannon';
 import * as Sharing from 'expo-sharing';
 
 import { FadeIn } from '@/components/anim/FadeIn';
@@ -109,6 +110,18 @@ export default function Result() {
 
   return (
     <Screen>
+      {/* Celebración cuando el veredicto es bueno (delight premium) */}
+      {color === colors.good && (
+        <ConfettiCannon
+          count={90}
+          origin={{ x: Dimensions.get('window').width / 2, y: -20 }}
+          autoStart
+          fadeOut
+          explosionSpeed={380}
+          fallSpeed={2800}
+        />
+      )}
+
       <FadeIn offsetY={6} style={{ alignItems: 'center', marginBottom: spacing.md }}>
         <Text style={styles.analyzedBadge}>✓ {t('result.analyzed')}</Text>
       </FadeIn>
