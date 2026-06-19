@@ -124,6 +124,22 @@ export const es = {
   'ob.camera.body': 'Es lo único que necesitamos para cuidar de {name}. Solo se usa para las fotos que tú decidas hacer, que se analizan y no se guardan en ningún servidor.',
   'ob.camera.cta': 'Permitir cámara',
 
+  // ── Onboarding: reveal del plan personalizado (antes del paywall) ────
+  'ob.plan.analyzingTitle': 'Preparando el plan de {name}…',
+  'ob.plan.step1': 'Analizando su perfil y raza',
+  'ob.plan.step2': 'Calculando su peso ideal',
+  'ob.plan.step3': 'Diseñando su plan de salud',
+  'ob.plan.step4': 'Preparando recordatorios',
+  'ob.plan.readyEyebrow': 'Plan personalizado',
+  'ob.plan.readyTitle': 'El plan de {name} está listo',
+  'ob.plan.readySubtitle': 'Esto es lo que haremos por su salud:',
+  'ob.plan.item1': 'Calcular su peso ideal y vigilar su evolución cada mes',
+  'ob.plan.item2': 'Analizar su comida y recomendarte la mejor para él',
+  'ob.plan.item3': 'Avisarte de vacunas y cuidados justo a tiempo',
+  'ob.plan.item4': 'Un asistente IA para tus dudas, 24/7',
+  'ob.plan.social': '🐾 Únete a miles de dueños que ya cuidan mejor a su perro',
+  'ob.plan.cta': 'Ver el plan de {name}',
+
   // ── Paywall ──────────────────────────────────────────────────────────
   'paywall.title': 'Escaneos ilimitados para cuidar a {name}',
   'paywall.titleNoName': 'Escaneos ilimitados para cuidar a tu perro',

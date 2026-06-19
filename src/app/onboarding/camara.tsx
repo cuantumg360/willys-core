@@ -9,7 +9,6 @@ import { Button } from '@/components/ui/Button';
 import { ProgressBar } from '@/components/ui/ProgressBar';
 import { Screen } from '@/components/ui/Screen';
 import { t } from '@/i18n';
-import { useAuth } from '@/store/useAuth';
 import { usePrimaryPet } from '@/store/useAppStore';
 import { colors, spacing, type } from '@/theme';
 
@@ -20,13 +19,11 @@ import { colors, spacing, type } from '@/theme';
 export default function OnboardingCamera() {
   const pet = usePrimaryPet();
   const [, requestPermission] = useCameraPermissions();
-  const authed = useAuth((s) => s.status === 'authed');
   const name = pet?.nombre ?? 'tu perro';
 
-  // Si aún no hay cuenta, el onboarding continúa por el registro; si ya la
-  // hay (p. ej. al repetir el tutorial), salta directo a la oferta.
-  const goNext = () =>
-    router.push(authed ? '/paywall?context=onboarding' : '/auth?context=onboarding');
+  // Tras la cámara, el reveal del plan personalizado (que luego encadena con
+  // cuenta/oferta). Construye anticipación antes del paywall.
+  const goNext = () => router.push('/onboarding/plan' as never);
 
   const ask = async () => {
     await requestPermission();
