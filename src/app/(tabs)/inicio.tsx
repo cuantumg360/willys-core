@@ -5,6 +5,8 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { FadeIn } from '@/components/anim/FadeIn';
 import { PetAvatar } from '@/components/PetAvatar';
 import { ScanCounter } from '@/components/ScanCounter';
+import { ScoreRing } from '@/components/result/ScoreRing';
+import { Button } from '@/components/ui/Button';
 import { PressableScale } from '@/components/ui/PressableScale';
 import { Screen } from '@/components/ui/Screen';
 import { listScanners, ScannerConfig } from '@/features/scanners/registry';
@@ -41,6 +43,28 @@ export default function Home() {
   const streak = careStreak(scans, healthRecords);
   const dash = buildDashboard(pet, scans, healthRecords, reminders);
   const canScan = premium || freeScansLeft(freeScansUsed) > 0;
+
+  // Puntuación de salud glanceable (0-100) derivada del último BCS.
+  const lastBcs = scans.find(
+    (s) =>
+      (!s.petId || s.petId === pet?.id) &&
+      s.result.tipo === 'condicion_corporal' &&
+      s.result.confianza !== 'baja',
+  )?.result.puntuacion;
+  const healthScore =
+    lastBcs !== undefined
+      ? Math.max(30, Math.round(100 - Math.min(1, Math.abs(lastBcs - 4.5) / 4.5) * 55))
+      : null;
+  const healthLabel =
+    healthScore == null
+      ? ''
+      : healthScore >= 80
+        ? t('home.health.excellent')
+        : healthScore >= 60
+          ? t('home.health.good')
+          : healthScore >= 40
+            ? t('home.health.fair')
+            : t('home.health.poor');
 
   const openScanner = (scanner: ScannerConfig) => {
     if (!canScan) {
@@ -80,6 +104,33 @@ export default function Home() {
             <ScanCounter />
           </View>
         </LinearGradient>
+      </FadeIn>
+
+      {/* Puntuación de salud héroe (glanceable, número grande con count-up) */}
+      <FadeIn delay={60} style={styles.healthCard}>
+        {healthScore != null ? (
+          <>
+            <Text style={styles.healthTitle}>{t('home.health.title', { name: pet?.nombre ?? '' })}</Text>
+            <ScoreRing
+              value={healthScore}
+              max={100}
+              categoria={healthLabel}
+              color={scoreColor(healthScore)}
+            />
+          </>
+        ) : (
+          <>
+            <Text style={styles.healthEmoji}>📸</Text>
+            <Text style={[type.heading, { textAlign: 'center' }]}>
+              {t('home.health.empty', { name: pet?.nombre ?? 'tu perro' })}
+            </Text>
+            <Button
+              label={t('home.health.scan')}
+              onPress={() => openScanner(listScanners()[0])}
+              style={{ alignSelf: 'stretch' }}
+            />
+          </>
+        )}
       </FadeIn>
 
       {/* Resumen tipo panel (etiquetas): peso, objetivo, estado, nutrición… */}
@@ -199,6 +250,17 @@ const styles = StyleSheet.create({
   summaryLabel: { ...type.small, fontWeight: '600', color: colors.textMuted, flex: 1 },
   summaryValue: { fontSize: 19, fontWeight: '800', color: colors.text },
   summarySub: { ...type.small, color: colors.textMuted },
+  healthCard: {
+    backgroundColor: colors.surface,
+    borderRadius: radius.lg,
+    padding: spacing.lg,
+    marginTop: spacing.md,
+    alignItems: 'center',
+    gap: spacing.md,
+    ...shadow.card,
+  },
+  healthTitle: { ...type.heading },
+  healthEmoji: { fontSize: 44 },
   hero: {
     borderRadius: radius.lg,
     padding: spacing.lg,
