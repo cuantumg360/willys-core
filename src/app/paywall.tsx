@@ -144,6 +144,14 @@ export default function Paywall() {
         </LinearGradient>
       </FadeIn>
 
+      {flags.lifetimeFounder && (
+        <FadeIn delay={300}>
+          <View style={styles.scarcity}>
+            <Text style={styles.scarcityText}>{t('paywall.founderBanner')}</Text>
+          </View>
+        </FadeIn>
+      )}
+
       <View style={{ gap: spacing.sm }}>
         <PlanOption
           selected={plan === 'annual'}
@@ -298,6 +306,14 @@ const styles = StyleSheet.create({
   valueYouLabel: { ...type.heading, color: colors.primaryDark, flex: 1 },
   valueYouPrice: { fontSize: 26, fontWeight: '800', color: colors.primary },
   planPriceBig: { fontSize: 22, fontWeight: '800', color: colors.text },
+  scarcity: {
+    backgroundColor: colors.accent,
+    borderRadius: radius.md,
+    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.md,
+    alignItems: 'center',
+  },
+  scarcityText: { ...type.small, color: colors.textOnPrimary, fontWeight: '800', textAlign: 'center' },
   top: { alignItems: 'center', gap: spacing.md, marginTop: spacing.xl },
   emoji: { fontSize: 52 },
   featuresCard: {

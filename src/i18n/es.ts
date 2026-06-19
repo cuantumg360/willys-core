@@ -146,6 +146,7 @@ export const es = {
   'paywall.bullet1': 'Controla su peso con la escala veterinaria BCS',
   'paywall.bullet2': 'Analiza cualquier pienso o snack al instante',
   'paywall.bullet3': 'Historial, evolución y perfiles sin límites',
+  'paywall.founderBanner': '🔥 Plan fundador: solo 50 plazas de por vida. No se repetirá.',
   'paywall.includesTitle': 'Todo lo que incluye Premium',
   'paywall.f1.t': 'Escaneos ilimitados',
   'paywall.f1.s': 'Cuerpo (BCS) y pienso, sin límite',
