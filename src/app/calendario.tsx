@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/Button';
 import { Screen } from '@/components/ui/Screen';
 import { t } from '@/i18n';
 import { HealthRecord, Reminder } from '@/store/types';
+import { rescheduleReminders } from '@/services/notifications';
 import { useAppStore, usePrimaryPet } from '@/store/useAppStore';
 import { colors, gradients, radius, shadow, spacing, type } from '@/theme';
 import { formatScanDate } from '@/utils/dates';
@@ -99,7 +100,10 @@ export default function Calendario() {
                     </View>
                     <Pressable
                       style={styles.card}
-                      onPress={() => updateReminder(r.id, { done: true })}
+                      onPress={() => {
+                        updateReminder(r.id, { done: true });
+                        rescheduleReminders(useAppStore.getState().reminders, pet?.nombre);
+                      }}
                     >
                       <View style={{ flex: 1, gap: 2 }}>
                         <Text style={[type.body, { fontWeight: '700' }]}>{r.title}</Text>

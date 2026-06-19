@@ -6,6 +6,7 @@ import { Screen } from '@/components/ui/Screen';
 import { APP_VERSION, SUPPORT_EMAIL } from '@/config/app';
 import { MAX_PETS } from '@/config/limits';
 import { t } from '@/i18n';
+import { requestNotifications, rescheduleReminders } from '@/services/notifications';
 import { usePurchases } from '@/services/purchases';
 import { cloud } from '@/services/sync';
 import { useAppStore, usePrimaryPet } from '@/store/useAppStore';
@@ -26,6 +27,16 @@ export default function Settings() {
   const doRestore = async () => {
     const restored = await restore();
     Alert.alert(restored ? t('settings.sub.active') : t('settings.sub.inactive'));
+  };
+
+  const enableNotifications = async () => {
+    const ok = await requestNotifications();
+    if (ok) {
+      await rescheduleReminders(useAppStore.getState().reminders, pet?.nombre);
+      Alert.alert(t('settings.notifications.onTitle'), t('settings.notifications.onBody'));
+    } else {
+      Alert.alert(t('settings.notifications.offTitle'), t('settings.notifications.offBody'));
+    }
   };
 
   const confirmSignOut = () => {
@@ -106,6 +117,7 @@ export default function Settings() {
 
       <Section title={t('calendar.title')}>
         <Row label={`🗓️ ${t('calendar.entry')}`} onPress={() => router.push('/calendario' as never)} />
+        <Row label={`🔔 ${t('settings.notifications.enable')}`} onPress={enableNotifications} />
       </Section>
 
       <Section title={t('chat.title')}>

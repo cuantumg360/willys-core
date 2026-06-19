@@ -7,6 +7,7 @@ import { ChipSelect } from '@/components/ui/ChipSelect';
 import { Field } from '@/components/ui/Field';
 import { Screen } from '@/components/ui/Screen';
 import { t, TKey } from '@/i18n';
+import { requestNotifications, rescheduleReminders } from '@/services/notifications';
 import { ReminderKind } from '@/store/types';
 import { usePrimaryPet, useAppStore } from '@/store/useAppStore';
 import { spacing, type } from '@/theme';
@@ -35,7 +36,7 @@ export default function NuevoRecordatorio() {
     return null;
   }
 
-  const save = () => {
+  const save = async () => {
     const offset = DATES.find((d) => d.value === dateKey)?.offsetDays ?? 30;
     const due = new Date();
     due.setDate(due.getDate() + offset);
@@ -47,6 +48,9 @@ export default function NuevoRecordatorio() {
       dueDate: due.toISOString(),
       done: false,
     });
+    // Pide permiso de avisos (si hace falta) y agenda la notificación local.
+    await requestNotifications();
+    await rescheduleReminders(useAppStore.getState().reminders, pet.nombre);
     router.back();
   };
 
